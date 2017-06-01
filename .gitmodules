@@ -1,0 +1,9 @@
+[submodule "dependency/catch"]
+	path = dependency/catch
+	url = https://github.com/corvusoft/catch
+[submodule "dependency/core"]
+	path = dependency/core
+	url = https://github.com/corvusoft/core
+[submodule "dependency/runloop"]
+	path = dependency/runloop
+	url = https://github.com/corvusoft/runloop
