@@ -65,8 +65,10 @@ namespace corvusoft
             return error_code( );
         }
         
-        error_code HTTP::accept( const shared_ptr< Adaptor >& ) noexcept
+        error_code HTTP::accept( const shared_ptr< Adaptor >& socket ) noexcept
         {
+            if ( socket == nullptr ) return make_error_code( std::errc::invalid_argument );
+            
             return error_code( );
         }
         
@@ -81,7 +83,7 @@ namespace corvusoft
             return error_code( );
         }
         
-        string HTTP::get_name( void ) const
+        string HTTP::get_key( void ) const
         {
             return "HTTP";
         }

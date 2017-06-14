@@ -65,7 +65,7 @@ namespace corvusoft
                 virtual std::error_code parse( const std::shared_ptr< network::Adaptor > adaptor, const std::shared_ptr< Message >& message ) noexcept override;
                 
                 //Getters
-                virtual std::string get_name( void ) const override;
+                virtual std::string get_key( void ) const override;
                 
                 //Setters
                 
