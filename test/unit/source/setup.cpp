@@ -22,7 +22,7 @@ using corvusoft::protocol::HTTP;
 using corvusoft::core::RunLoop;
 using corvusoft::core::Settings;
 
-TEST_CASE( "Protocol setup" )
+TEST_CASE( "Setup" )
 {
     const auto protocol = make_shared< HTTP >( );
     auto status = protocol->setup( nullptr );

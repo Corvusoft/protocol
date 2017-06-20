@@ -11,6 +11,7 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake" )
 find_package( core REQUIRED )
 find_package( catch REQUIRED )
 find_package( runloop REQUIRED )
+find_package( network REQUIRED )
 
 #
 # Configuration
@@ -18,7 +19,7 @@ find_package( runloop REQUIRED )
 include( "${CMAKE_SOURCE_DIR}/cmake/configuration.cmake" )
 
 set( INCLUDE_DIR "${CMAKE_SOURCE_DIR}/source" )
-include_directories( ${INCLUDE_DIR} SYSTEM ${core_INCLUDE} ${runloop_INCLUDE} )
+include_directories( ${INCLUDE_DIR} SYSTEM ${core_INCLUDE} ${runloop_INCLUDE} ${network_INCLUDE} )
 
 #
 # Build

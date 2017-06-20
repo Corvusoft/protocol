@@ -16,7 +16,7 @@ using corvusoft::protocol::HTTP;
 
 //External Namespaces
 
-TEST_CASE( "Protocol teardown" )
+TEST_CASE( "Teardown" )
 {
     const auto protocol = make_shared< HTTP >( );
     REQUIRE_NOTHROW( protocol->teardown( ) );

@@ -72,13 +72,19 @@ namespace corvusoft
             return error_code( );
         }
         
-        error_code HTTP::compose( const shared_ptr< Adaptor >&, const shared_ptr< Message >& ) noexcept
+        error_code HTTP::compose( const shared_ptr< Adaptor >& adaptor, const shared_ptr< Message >& message ) noexcept
         {
+            if ( adaptor == nullptr ) return make_error_code( std::errc::invalid_argument );
+            if ( message == nullptr ) return error_code( );
+            
             return error_code( );
         }
         
-        error_code HTTP::parse( const shared_ptr< Adaptor >, const shared_ptr< Message >& ) noexcept
+        error_code HTTP::parse( const shared_ptr< Adaptor > adaptor, const shared_ptr< Message >& message ) noexcept
         {
+            if ( adaptor == nullptr ) return make_error_code( std::errc::invalid_argument );
+            if ( message == nullptr ) return error_code( );
+            
             //mention in documentation this only reads to the start of body!
             return error_code( );
         }

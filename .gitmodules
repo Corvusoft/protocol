@@ -7,3 +7,6 @@
 [submodule "dependency/runloop"]
 	path = dependency/runloop
 	url = https://github.com/corvusoft/runloop
+[submodule "dependency/network"]
+	path = dependency/network
+	url = https://github.com/corvusoft/network

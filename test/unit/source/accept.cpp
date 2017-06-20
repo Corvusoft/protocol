@@ -20,9 +20,9 @@ using corvusoft::protocol::HTTP;
 //External Namespaces
 using corvusoft::network::Adaptor;
 
-TEST_CASE( "Protocol acceptor" )
+TEST_CASE( "Accept" )
 {
     const auto protocol = make_shared< HTTP >( );
-    auto status = protocol->accept( nullptr );
+    const auto status = protocol->accept( nullptr );
     REQUIRE( status == std::errc::invalid_argument );
 }
