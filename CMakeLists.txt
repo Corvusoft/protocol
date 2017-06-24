@@ -43,6 +43,7 @@ target_link_libraries( ${SHARED_LIBRARY_NAME} ${core_SHARED_LIBRARY} ${runloop_S
 
 enable_testing( )
 add_subdirectory( "${CMAKE_SOURCE_DIR}/test/unit" )
+add_subdirectory( "${CMAKE_SOURCE_DIR}/test/acceptance" )
 add_subdirectory( "${CMAKE_SOURCE_DIR}/test/integration" )
 
 #
