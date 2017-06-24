@@ -67,6 +67,7 @@ namespace corvusoft
         
         error_code HTTP::accept( const shared_ptr< Adaptor >& socket ) noexcept
         {
+            //must parse \r\n \r \n \n\r delimited messages.
             if ( socket == nullptr ) return make_error_code( std::errc::invalid_argument );
             
             return error_code( );

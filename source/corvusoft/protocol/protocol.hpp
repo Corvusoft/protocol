@@ -53,7 +53,7 @@ namespace corvusoft
                 virtual std::error_code setup( const std::shared_ptr< core::RunLoop >& runloop,
                                                const std::shared_ptr< const core::Settings >& settings = nullptr ) noexcept = 0;
                                                
-                virtual std::error_code accept( const std::shared_ptr< network::Adaptor >& adaptor ) noexcept = 0; //should return std::errc::wrong_protocol_type if able to service adaptor.
+                virtual std::error_code accept( const std::shared_ptr< network::Adaptor >& adaptor ) noexcept = 0;
                 
                 virtual std::error_code compose( const std::shared_ptr< network::Adaptor >& adaptor, const std::shared_ptr< Message >& message ) noexcept = 0;
                 

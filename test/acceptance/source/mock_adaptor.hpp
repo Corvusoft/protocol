@@ -78,17 +78,17 @@ class MockAdaptor final : public corvusoft::network::Adaptor
         
         virtual const corvusoft::core::Bytes peek( std::error_code& ) override
         {
-            return { };
+            return m_data;
         }
         
         virtual const corvusoft::core::Bytes consume( std::error_code& ) override
         {
-            return { };
+            return m_data;
         }
         
-        virtual std::size_t produce( const corvusoft::core::Bytes&, std::error_code& ) override
+        virtual std::size_t produce( const corvusoft::core::Bytes& data, std::error_code& ) override
         {
-            return 0;
+            return m_data = data;
         }
         
         //Getters
