@@ -13,26 +13,50 @@ include_directories( SYSTEM ${catch_INCLUDE} )
 #
 # Build
 #
-add_executable( accept_unit_test_suite ${SOURCE_DIR}/accept.cpp )
-target_link_libraries( accept_unit_test_suite ${STATIC_LIBRARY_NAME} )
-add_test( accept_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/accept_unit_test_suite )
+add_executable( http_accept_unit_test_suite ${SOURCE_DIR}/http/accept.cpp )
+target_link_libraries( http_accept_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_accept_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_accept_unit_test_suite )
 
-add_executable( constructor_unit_test_suite ${SOURCE_DIR}/constructor.cpp )
-target_link_libraries( constructor_unit_test_suite ${STATIC_LIBRARY_NAME} )
-add_test( constructor_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/constructor_unit_test_suite )
+add_executable( http_constructor_unit_test_suite ${SOURCE_DIR}/http/constructor.cpp )
+target_link_libraries( http_constructor_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_constructor_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_constructor_unit_test_suite )
 
-add_executable( destructor_unit_test_suite ${SOURCE_DIR}/destructor.cpp )
-target_link_libraries( destructor_unit_test_suite ${STATIC_LIBRARY_NAME} )
-add_test( destructor_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/destructor_unit_test_suite )
+add_executable( http_destructor_unit_test_suite ${SOURCE_DIR}/http/destructor.cpp )
+target_link_libraries( http_destructor_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_destructor_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_destructor_unit_test_suite )
 
-add_executable( get_key_unit_test_suite ${SOURCE_DIR}/get_key.cpp )
-target_link_libraries( get_key_unit_test_suite ${STATIC_LIBRARY_NAME} )
-add_test( get_key_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/get_key_unit_test_suite )
+add_executable( http_get_key_unit_test_suite ${SOURCE_DIR}/http/get_key.cpp )
+target_link_libraries( http_get_key_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_get_key_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_get_key_unit_test_suite )
 
-add_executable( setup_unit_test_suite ${SOURCE_DIR}/setup.cpp )
-target_link_libraries( setup_unit_test_suite ${STATIC_LIBRARY_NAME} )
-add_test( setup_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/setup_unit_test_suite )
+add_executable( http_setup_unit_test_suite ${SOURCE_DIR}/http/setup.cpp )
+target_link_libraries( http_setup_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_setup_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_setup_unit_test_suite )
 
-add_executable( teardown_unit_test_suite ${SOURCE_DIR}/teardown.cpp )
-target_link_libraries( teardown_unit_test_suite ${STATIC_LIBRARY_NAME} )
-add_test( teardown_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/teardown_unit_test_suite )
+add_executable( http_teardown_unit_test_suite ${SOURCE_DIR}/http/teardown.cpp )
+target_link_libraries( http_teardown_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_teardown_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_teardown_unit_test_suite )
+
+add_executable( message_clear_unit_test_suite ${SOURCE_DIR}/message/clear.cpp )
+target_link_libraries( message_clear_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( message_clear_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_clear_unit_test_suite )
+
+add_executable( message_constructor_unit_test_suite ${SOURCE_DIR}/message/constructor.cpp )
+target_link_libraries( message_constructor_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( message_constructor_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_constructor_unit_test_suite )
+
+add_executable( message_destructor_unit_test_suite ${SOURCE_DIR}/message/destructor.cpp )
+target_link_libraries( message_destructor_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( message_destructor_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_destructor_unit_test_suite )
+
+add_executable( message_get_names_unit_test_suite ${SOURCE_DIR}/message/get_names.cpp )
+target_link_libraries( message_get_names_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( message_get_names_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_get_names_unit_test_suite )
+
+add_executable( message_get_unit_test_suite ${SOURCE_DIR}/message/get.cpp )
+target_link_libraries( message_get_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( message_get_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_get_unit_test_suite )
+
+add_executable( message_set_unit_test_suite ${SOURCE_DIR}/message/set.cpp )
+target_link_libraries( message_set_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( message_set_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_set_unit_test_suite )
