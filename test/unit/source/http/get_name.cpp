@@ -16,8 +16,8 @@ using corvusoft::protocol::HTTP;
 
 //External Namespaces
 
-TEST_CASE( "Get Key" )
+TEST_CASE( "Get name" )
 {
     const auto protocol = make_shared< HTTP >( );
-    REQUIRE( protocol->get_key( ) == "HTTP" );
+    REQUIRE( protocol->get_name( ) == "HTTP" );
 }

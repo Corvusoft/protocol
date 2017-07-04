@@ -6,7 +6,6 @@
 #define _CORVUSOFT_PROTOCOL_DETAIL_MESSAGE_IMPL_H 1
 
 //System Includes
-#include <set>
 #include <map>
 #include <string>
 
@@ -35,9 +34,7 @@ namespace corvusoft
             
             struct MessageImpl
             {
-                std::set< const std::string > names { };
-                
-                std::map< const std::string, core::Bytes > properties { };
+                std::multimap< const std::string, core::Bytes > properties { };
             };
         }
     }

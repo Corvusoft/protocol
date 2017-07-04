@@ -34,7 +34,7 @@ class MockAdaptor final : public corvusoft::network::Adaptor
         //Definitions
         
         //Constructors
-        MockAdaptor( const corvusoft::core::Bytes& data ) : Adaptor( "" ),
+        MockAdaptor( const corvusoft::core::Bytes& data = { } ) : Adaptor( "" ),
             m_data( data )
         {
             return;
@@ -88,7 +88,8 @@ class MockAdaptor final : public corvusoft::network::Adaptor
         
         virtual std::size_t produce( const corvusoft::core::Bytes& data, std::error_code& ) override
         {
-            return m_data = data;
+            m_data = data;
+            return m_data.size( );
         }
         
         //Getters

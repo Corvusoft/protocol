@@ -34,7 +34,8 @@ class MockAdaptor final : public corvusoft::network::Adaptor
         //Definitions
         
         //Constructors
-        MockAdaptor( const std::string& key = "" ) : Adaptor( key )
+        MockAdaptor( const corvusoft::core::Bytes& data = { } ) : Adaptor( "" ),
+            m_data( data )
         {
             return;
         }
@@ -77,20 +78,26 @@ class MockAdaptor final : public corvusoft::network::Adaptor
         
         virtual const corvusoft::core::Bytes peek( std::error_code& ) override
         {
-            return { };
+            return m_data;
         }
         
         virtual const corvusoft::core::Bytes consume( std::error_code& ) override
         {
-            return { };
+            return m_data;
         }
         
-        virtual std::size_t produce( const corvusoft::core::Bytes&, std::error_code& ) override
+        virtual std::size_t produce( const corvusoft::core::Bytes& data, std::error_code& ) override
         {
-            return 0;
+            m_data = data;
+            return m_data.size( );
         }
         
         //Getters
+        corvusoft::core::Bytes get_data( void ) const
+        {
+            return m_data;
+        }
+        
         virtual std::string get_key( void ) const override
         {
             return "";
@@ -169,6 +176,7 @@ class MockAdaptor final : public corvusoft::network::Adaptor
         //Operators
         
         //Properties
+        corvusoft::core::Bytes m_data;
 };
 
 #endif  /* _CORVUSOFT_MOCK_ADAPTOR_H */

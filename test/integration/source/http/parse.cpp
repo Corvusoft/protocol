@@ -35,7 +35,7 @@ TEST_CASE( "Parse" )
     protocol = make_shared< HTTP >( );
     auto adaptor = make_shared< MockAdaptor >( );
     status = protocol->parse( adaptor, nullptr );
-    REQUIRE( status == error_code( ) );
+    REQUIRE( status == std::errc::invalid_argument );
     
     protocol = make_shared< HTTP >( );
     status = protocol->parse( adaptor, message );

@@ -35,7 +35,7 @@ TEST_CASE( "Compose" )
     protocol = make_shared< HTTP >( );
     auto adaptor = make_shared< MockAdaptor >( );
     status = protocol->compose( adaptor, nullptr );
-    REQUIRE( status == error_code( ) );
+    REQUIRE( status == std::errc::invalid_argument );
     
     protocol = make_shared< HTTP >( );
     status = protocol->compose( adaptor, message );

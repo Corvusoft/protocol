@@ -3,15 +3,11 @@
  */
 
 //System Includes
-#include <regex>
 #include <vector>
-#include <cassert>
-#include <cstdlib>
-#include <iterator>
-#include <algorithm>
 
 //Project Includes
 #include "corvusoft/protocol/http.hpp"
+#include "corvusoft/protocol/detail/http_impl.hpp"
 
 //External Includes
 #include <corvusoft/core/byte.hpp>
@@ -20,18 +16,16 @@
 #include <corvusoft/network/adaptor.hpp>
 
 //System Namespaces
+using std::list;
 using std::size_t;
-using std::regex;
-using std::smatch;
-using std::regex_match;
 using std::string;
 using std::vector;
-using std::find_if;
 using std::shared_ptr;
 using std::error_code;
 using std::make_error_code;
 
 //Project Namespaces
+using corvusoft::protocol::detail::HTTPImpl;
 
 //External Namespaces
 using corvusoft::core::Byte;
@@ -45,7 +39,8 @@ namespace corvusoft
 {
     namespace protocol
     {
-        HTTP::HTTP( void ) : Protocol( )
+        HTTP::HTTP( void ) : Protocol( ),
+            m_pimpl( new HTTPImpl )
         {
             return;
         }
@@ -65,32 +60,68 @@ namespace corvusoft
             return error_code( );
         }
         
-        error_code HTTP::accept( const shared_ptr< Adaptor >& socket ) noexcept
-        {
-            //must parse \r\n \r \n \n\r delimited messages.
-            if ( socket == nullptr ) return make_error_code( std::errc::invalid_argument );
-            
-            return error_code( );
-        }
-        
+        //mentioned the reserved words in message message, path, etc...
         error_code HTTP::compose( const shared_ptr< Adaptor >& adaptor, const shared_ptr< Message >& message ) noexcept
         {
             if ( adaptor == nullptr ) return make_error_code( std::errc::invalid_argument );
-            if ( message == nullptr ) return error_code( );
+            if ( message == nullptr ) return make_error_code( std::errc::invalid_argument );
             
-            return error_code( );
+            Bytes data;
+            error_code error;
+            size_t length = 0;
+            
+            if ( message->contains( "request:path" ) )
+                length = m_pimpl->compose_request( data, message, error );
+            else if ( message->contains( "response:message" ) )
+                length = m_pimpl->compose_response( data, message, error );
+            else
+                return std::make_error_code( std::errc::wrong_protocol_type );
+                
+            adaptor->produce( data, error );
+            if ( error ) return error;
+            
+            //adaptor->flush( length, error );
+            return error;
         }
         
+        error_code HTTP::compose( const shared_ptr< Adaptor >& adaptor, const list< const shared_ptr< Message > >& messages ) noexcept
+        {
+        
+        }
+        
+        //mention in documentation this only reads to the start of body!
+        //add list arguemnt for parse and compose.
         error_code HTTP::parse( const shared_ptr< Adaptor > adaptor, const shared_ptr< Message >& message ) noexcept
         {
             if ( adaptor == nullptr ) return make_error_code( std::errc::invalid_argument );
-            if ( message == nullptr ) return error_code( );
+            if ( message == nullptr ) return make_error_code( std::errc::invalid_argument );
             
-            //mention in documentation this only reads to the start of body!
-            return error_code( );
+            error_code error;
+            const auto buffer = adaptor->consume( error );
+            if ( error ) return error; //must return no_message when empty.
+            
+            size_t length = 0;
+            const auto data = m_pimpl->extract( buffer );
+            if ( data.size( ) <= 1 ) return make_error_code( std::errc::wrong_protocol_type );
+            
+            if ( m_pimpl->is_request( data ) )
+                length = m_pimpl->parse_request( data, message, error );
+            else if ( m_pimpl->is_response( data ) )
+                length = m_pimpl->parse_response( data, message, error );
+            else
+                return make_error_code( std::errc::wrong_protocol_type );
+                
+            //adaptor->purge( length, error );
+            
+            return error;
         }
         
-        string HTTP::get_key( void ) const
+        error_code HTTP::parse( const shared_ptr< Adaptor > adaptor, const list< const shared_ptr< Message > >& messages ) noexcept
+        {
+        
+        }
+        
+        string HTTP::get_name( void ) const
         {
             return "HTTP";
         }

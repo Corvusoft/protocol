@@ -31,5 +31,4 @@ TEST_CASE( "Erase" )
     
     REQUIRE( message->get( "forename" ) == make_bytes( "" ) );
     REQUIRE( message->get( "surname" ) == make_bytes( "Metcalfe" ) );
-    REQUIRE( message->get_names( ) == set< const string >( { "surname" } ) );
 }

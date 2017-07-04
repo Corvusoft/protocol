@@ -6,6 +6,7 @@
 #define _CORVUSOFT_PROTOCOL_PROTOCOL_H 1
 
 //System Includes
+#include <list>
 #include <memory>
 #include <system_error>
 
@@ -53,14 +54,16 @@ namespace corvusoft
                 virtual std::error_code setup( const std::shared_ptr< core::RunLoop >& runloop,
                                                const std::shared_ptr< const core::Settings >& settings = nullptr ) noexcept = 0;
                                                
-                virtual std::error_code accept( const std::shared_ptr< network::Adaptor >& adaptor ) noexcept = 0;
-                
                 virtual std::error_code compose( const std::shared_ptr< network::Adaptor >& adaptor, const std::shared_ptr< Message >& message ) noexcept = 0;
+                
+                virtual std::error_code compose( const std::shared_ptr< network::Adaptor >& adaptor, const std::list< const std::shared_ptr< Message > >& messages ) noexcept = 0;
                 
                 virtual std::error_code parse( const std::shared_ptr< network::Adaptor > adaptor, const std::shared_ptr< Message >& message ) noexcept = 0;
                 
+                virtual std::error_code parse( const std::shared_ptr< network::Adaptor > adaptor, const std::list< const std::shared_ptr< Message > >& messages ) noexcept = 0;
+                
                 //Getters
-                virtual std::string get_key( void ) const = 0;
+                virtual std::string get_name( void ) const = 0;
                 
                 //Setters
                 

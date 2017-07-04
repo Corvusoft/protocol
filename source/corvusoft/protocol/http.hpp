@@ -6,6 +6,7 @@
 #define _CORVUSOFT_PROTOCOL_HTTP_H 1
 
 //System Includes
+#include <list>
 #include <string>
 #include <memory>
 #include <system_error>
@@ -39,6 +40,10 @@ namespace corvusoft
     namespace protocol
     {
         //Forward Declarations
+        namespace detail
+        {
+            struct HTTPImpl;
+        }
         
         class HTTP final : public Protocol
         {
@@ -58,14 +63,16 @@ namespace corvusoft
                 virtual std::error_code setup( const std::shared_ptr< core::RunLoop >& runloop,
                                                const std::shared_ptr< const core::Settings >& settings = nullptr ) noexcept override;
                                                
-                virtual std::error_code accept( const std::shared_ptr< network::Adaptor >& adaptor ) noexcept override;
-                
                 virtual std::error_code compose( const std::shared_ptr< network::Adaptor >& adaptor, const std::shared_ptr< Message >& message ) noexcept override;
+                
+                virtual std::error_code compose( const std::shared_ptr< network::Adaptor >& adaptor, const std::list< const std::shared_ptr< Message > >& messages ) noexcept override;
                 
                 virtual std::error_code parse( const std::shared_ptr< network::Adaptor > adaptor, const std::shared_ptr< Message >& message ) noexcept override;
                 
+                virtual std::error_code parse( const std::shared_ptr< network::Adaptor > adaptor, const std::list< const std::shared_ptr< Message > >& messages ) noexcept override;
+                
                 //Getters
-                virtual std::string get_key( void ) const override;
+                virtual std::string get_name( void ) const override;
                 
                 //Setters
                 
@@ -108,6 +115,7 @@ namespace corvusoft
                 HTTP& operator =( const HTTP& value ) = delete;
                 
                 //Properties
+                std::unique_ptr< detail::HTTPImpl > m_pimpl;
         };
     }
 }

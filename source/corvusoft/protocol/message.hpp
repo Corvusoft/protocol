@@ -6,7 +6,7 @@
 #define _CORVUSOFT_PROTOCOL_MESSAGE_H 1
 
 //System Includes
-#include <set>
+#include <vector>
 #include <string>
 #include <memory>
 
@@ -50,8 +50,10 @@ namespace corvusoft
                 
                 void erase( const std::string& name );
                 
+                bool contains( const std::string& name );
+                
                 //Getters
-                std::set< const std::string > get_names( void ) const;
+                std::vector< const std::string > get_names( void ) const;
                 
                 core::Bytes get( const std::string& name, const core::Bytes& default_value = { } ) const;
                 
@@ -63,6 +65,7 @@ namespace corvusoft
                 //Operators
                 
                 //Properties
+                //add iterators for duplicat fieldnames.
                 
             protected:
                 //Friends

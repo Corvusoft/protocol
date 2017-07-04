@@ -3,6 +3,7 @@
  */
 
 //System Includes
+#include <utility>
 
 //Project Includes
 #include "corvusoft/protocol/message.hpp"
@@ -11,8 +12,9 @@
 //External Includes
 
 //System Namespaces
-using std::set;
+using std::vector;
 using std::string;
+using std::make_pair;
 using std::unique_ptr;
 
 //Project Namespaces
@@ -38,30 +40,38 @@ namespace corvusoft
         
         void Message::clear( void )
         {
-            m_pimpl->names.clear( );
             m_pimpl->properties.clear( );
         }
         
         void Message::erase( const std::string& name )
         {
-            m_pimpl->names.erase( name );
             m_pimpl->properties.erase( name );
         }
         
-        std::set< const std::string > Message::get_names( void ) const
+        bool Message::contains( const std::string& name )
         {
-            return m_pimpl->names;
+            return m_pimpl->properties.count( name );
+        }
+        
+        vector< const string > Message::get_names( void ) const
+        {
+            vector< const string > names;
+            
+            for ( const auto entry : m_pimpl->properties )
+                names.push_back( entry.first );
+                
+            return names;
         }
         
         Bytes Message::get( const string& name, const Bytes& default_value ) const
         {
-            return ( m_pimpl->properties.count( name ) ) ? m_pimpl->properties.at( name ) : default_value;
+            return ( m_pimpl->properties.count( name ) ) ?
+                   m_pimpl->properties.lower_bound( name )->second : default_value;
         }
         
         void Message::set( const string& name, const Bytes& value )
         {
-            m_pimpl->names.insert( name );
-            m_pimpl->properties[ name ] = value;
+            m_pimpl->properties.emplace( make_pair( name, value ) );
         }
         
         void Message::set( const string& name, const string& value )

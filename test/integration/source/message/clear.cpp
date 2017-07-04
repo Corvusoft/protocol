@@ -29,7 +29,6 @@ TEST_CASE( "Clear" )
     message->set( "surname", make_bytes( "Metcalfe" ) );
     message->clear( );
     
-    REQUIRE( message->get( "forename" ) == make_bytes( "" ) );
     REQUIRE( message->get( "surname" ) == make_bytes( "" ) );
-    REQUIRE( message->get_names( ) == set< const string >( ) );
+    REQUIRE( message->get( "forename" ) == make_bytes( "" ) );
 }
