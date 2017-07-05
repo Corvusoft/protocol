@@ -35,52 +35,62 @@ namespace corvusoft
             
             struct HTTPImpl
             {
-                // static bool is_header( const std::string& value )
-                // {
-                //     const size_t start_at = 1;
-                //     const char delimiter = ':';
-                //     return value.find_first_of( delimiter, start_at );
-                // }
+                //static const Byte HEADER_DELIMITER = ': ';
+                //static const Byte
                 
                 static bool is_request( const std::vector< const std::string >& value )
                 {
-                    static const std::regex pattern( "^[a-z]+\\s+.+\\s+.+$", std::regex::icase );
+                    static const std::regex pattern( "^[a-z]+\\s+.+\\s+.+$", std::regex::icase ); //validate \r\n any order and HTTP/*.*
                     return std::regex_match( value.at( 0 ), pattern );
                 }
                 
                 static bool is_response( const std::vector< const std::string >& value )
                 {
-                    static const std::regex pattern( "^HTTP/[a-z0-9]+\\.[a-z0-9]+\\s+[0-9]+\\s+.+$", std::regex::icase );
+                    static const std::regex pattern( "^HTTP/[a-z0-9]+\\.[a-z0-9]+\\s+[0-9]+\\s+.+$", std::regex::icase ); //validate \r\n any order
                     return std::regex_match( value.at( 0 ), pattern );
                 }
                 
                 static std::size_t parse_request( const std::vector< const std::string >& data, const std::shared_ptr< Message >& message, std::error_code& error )
                 {
-                    // const auto status = data.at( 0 );
-                    // auto index = status.find_first_of( ' ' );
-                    // if ( index == string::npos ) return make_error_code( std::errc::wrong_protocol_type );
-                    // message->set( "request:method", status.substr( 0, index ) );
+                    const std::string status = data.at( 0 );
+                    std::string::size_type size = 0;
+                    std::string::size_type start = 0;
+                    std::string::size_type stop = status.find_first_of( ' ' );
+                    message->set( "request:method", status.substr( start, stop ) );
                     
-                    // index = status.find_first_of( ' ', index );
-                    // if ( index == string::npos ) return make_error_code( std::errc::wrong_protocol_type );
-                    // message->set( "request:path", status, substr( index, index ) );
+                    size += stop;
+                    start = stop;
+                    stop = status.find_first_of( ' ', start );
+                    message->set( "request:path", status.substr( start, stop ) );
                     
-                    // index = status.find_first_of( '/', index );
-                    // if ( index == string::npos ) return make_error_code( std::errc::wrong_protocol_type );
-                    // message->set( "request:protocol", status.substr( index, index ) );
+                    size += stop;
+                    start = stop;
+                    start = status.find_first_of( ' ', start );
+                    size += start;
+                    stop = status.find_first_of( '/', start );
+                    message->set( "request:protocol", status.substr( start, stop ) );
                     
-                    // message->set( "request:version", status.substr( ) );
+                    size += stop;
+                    start = stop;
+                    message->set( "request:version", status.substr( start ) );
                     
-                    // const auto length = data.length( );
-                    // for ( index = 1; index not_eq length; index++ )
-                    // {
-                    //     if ( entry == "\r\n" ) break;
-                    //     message->set( matches[ 1 ].str( ), matches[ 2 ].str( ) ); //must allow duplicates
-                    //     //bad message on malformed header
-                    // }
+                    const auto length = data.size( );
+                    for ( std::string::size_type index = 1; index not_eq length; index++ )
+                    {
+                        const auto entry = data.at( index );
+                        if ( entry == "\r\n" ) break;
+                        
+                        stop = entry.find_first_of( ':' );
+                        if ( stop == std::string::npos )
+                        {
+                            error = std::make_error_code( std::errc::bad_message );
+                            return 0;
+                        }
+                        
+                        message->set( entry.substr( 0, stop ), entry.substr( stop ) );
+                    }
                     
-                    // error;
-                    return 0;
+                    return size;
                 }
                 
                 static std::size_t parse_response( const std::vector< const std::string >& data, const std::shared_ptr< Message >& message, std::error_code& error )
@@ -88,9 +98,42 @@ namespace corvusoft
                 
                 }
                 
-                static std::size_t compose_request( const core::Bytes& data, const std::shared_ptr< Message >& message, std::error_code& error )
+                static std::size_t compose_request( core::Bytes& data, const std::shared_ptr< Message >& message, std::error_code& error )
                 {
-                
+                    data = message->get( "request:method" );
+                    data.emplace_back( ' ' );
+                    
+                    auto field = message->get( "request:path" );
+                    data.insert( data.end( ), field.begin( ), field.end( ) );
+                    data.emplace_back( ' ' );
+                    
+                    field = message->get( "request:protocol" );
+                    data.insert( data.end( ), field.begin( ), field.end( ) );
+                    data.emplace_back( '/' );
+                    
+                    field = message->get( "request:version" );
+                    data.insert( data.end( ), field.begin( ), field.end( ) );
+                    data.emplace_back( '\r' );
+                    data.emplace_back( '\n' );
+                    
+                    for ( const auto name : message->get_names( ) )
+                    {
+                        if ( is_request_header_field( name ) )
+                        {
+                            data.insert( field.end( ), name.begin( ), name.end( ) );
+                            data.emplace_back( ':' );
+                            data.emplace_back( ' ' );
+                            field = message->get( name );
+                            data.insert( data.end( ), field.begin( ), field.end( ) );
+                            data.emplace_back( '\r' );
+                            data.emplace_back( '\n' );
+                        }
+                    }
+                    
+                    data.emplace_back( '\r' );
+                    data.emplace_back( '\n' );
+                    field = message->get( "request:body" );
+                    data.insert( data.end( ), field.begin( ), field.end( ) );
                 }
                 
                 static std::size_t compose_response( core::Bytes& data, const std::shared_ptr< Message >& message, std::error_code& error )
