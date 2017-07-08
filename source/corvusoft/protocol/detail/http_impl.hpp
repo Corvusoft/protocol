@@ -9,6 +9,7 @@
 #include <regex>
 #include <vector>
 #include <memory>
+#include <ctype.h>
 
 //Project Includes
 
@@ -35,18 +36,15 @@ namespace corvusoft
             
             struct HTTPImpl
             {
-                //static const Byte HEADER_DELIMITER = ': ';
-                //static const Byte
-                
                 static bool is_request( const std::vector< const std::string >& value )
                 {
-                    static const std::regex pattern( "^[a-z]+\\s+.+\\s+.+$", std::regex::icase ); //validate \r\n any order and HTTP/*.*
+                    static const std::regex pattern( "^[a-z]+\\s+.+\\s+HTTP/[0-9]+\\.[0-9]+[\n\r]+$", std::regex::icase );
                     return std::regex_match( value.at( 0 ), pattern );
                 }
                 
                 static bool is_response( const std::vector< const std::string >& value )
                 {
-                    static const std::regex pattern( "^HTTP/[a-z0-9]+\\.[a-z0-9]+\\s+[0-9]+\\s+.+$", std::regex::icase ); //validate \r\n any order
+                    static const std::regex pattern( "^HTTP/[0-9]+\\.[0-9]+\\s+[0-9]+\\s+.+[\r\n]+$", std::regex::icase );
                     return std::regex_match( value.at( 0 ), pattern );
                 }
                 
@@ -74,6 +72,43 @@ namespace corvusoft
                     start = stop;
                     message->set( "request:version", status.substr( start ) );
                     
+                    size += parse_headers( data, message, error );
+                    if ( error ) size = 0;
+                    
+                    return size;
+                }
+                
+                static std::size_t parse_response( const std::vector< const std::string >& data, const std::shared_ptr< Message >& message, std::error_code& error )
+                {
+                    const std::string status = data.at( 0 );
+                    std::string::size_type size = 0;
+                    std::string::size_type start = 0;
+                    std::string::size_type stop = status.find_first_of( '/' );
+                    message->set( "response:protocol", status.substr( start, stop ) );
+                    
+                    size += stop;
+                    start = stop;
+                    stop = status.find_first_of( ' ', start );
+                    message->set( "response:version", status.substr( start, stop ) );
+                    
+                    size += stop;
+                    start = stop;
+                    start = status.find_first_of( ' ', start );
+                    message->set( "response:status", status.substr( start, stop ) );
+                    
+                    size += stop;
+                    start = stop;
+                    message->set( "response:message", status.substr( start ) );
+                    
+                    size += parse_headers( data, message, error );
+                    if ( error ) size = 0;
+                    
+                    return size;
+                }
+                
+                static std::size_t parse_headers( const std::vector< const std::string >& data, const std::shared_ptr< Message >& message, std::error_code& error )
+                {
+                    std::string::size_type stop = 0;
                     const auto length = data.size( );
                     for ( std::string::size_type index = 1; index not_eq length; index++ )
                     {
@@ -90,12 +125,7 @@ namespace corvusoft
                         message->set( entry.substr( 0, stop ), entry.substr( stop ) );
                     }
                     
-                    return size;
-                }
-                
-                static std::size_t parse_response( const std::vector< const std::string >& data, const std::shared_ptr< Message >& message, std::error_code& error )
-                {
-                
+                    return 0;
                 }
                 
                 static std::size_t compose_request( core::Bytes& data, const std::shared_ptr< Message >& message, std::error_code& error )
@@ -117,23 +147,12 @@ namespace corvusoft
                     data.emplace_back( '\n' );
                     
                     for ( const auto name : message->get_names( ) )
-                    {
-                        if ( is_request_header_field( name ) )
-                        {
-                            data.insert( field.end( ), name.begin( ), name.end( ) );
-                            data.emplace_back( ':' );
-                            data.emplace_back( ' ' );
-                            field = message->get( name );
-                            data.insert( data.end( ), field.begin( ), field.end( ) );
-                            data.emplace_back( '\r' );
-                            data.emplace_back( '\n' );
-                        }
-                    }
+                        if ( is_request_header( name ) )
+                            compose_header( data, name, message->get( name ) );
+                            
+                    compose_body( data, message->get( "request:body" ) );
                     
-                    data.emplace_back( '\r' );
-                    data.emplace_back( '\n' );
-                    field = message->get( "request:body" );
-                    data.insert( data.end( ), field.begin( ), field.end( ) );
+                    return data.size( );
                 }
                 
                 static std::size_t compose_response( core::Bytes& data, const std::shared_ptr< Message >& message, std::error_code& error )
@@ -155,23 +174,30 @@ namespace corvusoft
                     data.emplace_back( '\n' );
                     
                     for ( const auto name : message->get_names( ) )
-                    {
-                        if ( is_response_header_field( name ) )
-                        {
-                            data.insert( field.end( ), name.begin( ), name.end( ) );
-                            data.emplace_back( ':' );
-                            data.emplace_back( ' ' );
-                            field = message->get( name );
-                            data.insert( data.end( ), field.begin( ), field.end( ) );
-                            data.emplace_back( '\r' );
-                            data.emplace_back( '\n' );
-                        }
-                    }
+                        if ( is_response_header( name ) )
+                            compose_header( data, name, message->get( name ) );
+                            
+                    compose_body( data, message->get( "response:body" ) );
                     
+                    return data.size( );
+                }
+                
+                static std::size_t compose_header( core::Bytes& data, const std::string& name, const core::Bytes& value )
+                {
+                    data.insert( data.end( ), name.begin( ), name.end( ) );
+                    data.emplace_back( ':' );
+                    data.emplace_back( ' ' );
+                    
+                    data.insert( data.end( ), value.begin( ), value.end( ) );
                     data.emplace_back( '\r' );
                     data.emplace_back( '\n' );
-                    field = message->get( "response:body" );
-                    data.insert( data.end( ), field.begin( ), field.end( ) );
+                }
+                
+                static std::size_t compose_body( core::Bytes& data, const core::Bytes& value )
+                {
+                    data.emplace_back( '\r' );
+                    data.emplace_back( '\n' );
+                    data.insert( data.end( ), value.begin( ), value.end( ) );
                 }
                 
                 static bool is_delimiter( const core::Byte value )
@@ -179,7 +205,7 @@ namespace corvusoft
                     return value == '\r' or value == '\n';
                 }
                 
-                static bool is_request_header_field( const std::string& name )
+                static bool is_request_header( const std::string& name )
                 {
                     return name not_eq "request:body"     and
                            name not_eq "request:path"     and
@@ -188,7 +214,7 @@ namespace corvusoft
                            name not_eq "request:protocol";
                 }
                 
-                static bool is_response_header_field( const std::string& name )
+                static bool is_response_header( const std::string& name )
                 {
                     return name not_eq "response:body"     and
                            name not_eq "response:status"   and
@@ -217,6 +243,14 @@ namespace corvusoft
                     }
                     
                     return record;
+                }
+                
+                static std::string uppercase( const core::Bytes& values )
+                {
+                    std::string result;
+                    for ( const auto value : values )
+                        result.push_back( ::toupper( value ) );
+                    return result;
                 }
             };
         }

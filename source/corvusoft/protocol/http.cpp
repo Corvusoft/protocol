@@ -70,9 +70,9 @@ namespace corvusoft
             error_code error;
             size_t length = 0;
             
-            if ( message->contains( "request:path" ) )
+            if ( m_pimpl->uppercase( message->get( "request:protocol" ) ) == "HTTP" )
                 length = m_pimpl->compose_request( data, message, error );
-            else if ( message->contains( "response:message" ) )
+            else if ( m_pimpl->uppercase( message->get( "response:protocol" ) ) == "HTTP" )
                 length = m_pimpl->compose_response( data, message, error );
             else
                 return std::make_error_code( std::errc::wrong_protocol_type );

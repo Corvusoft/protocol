@@ -48,7 +48,12 @@ namespace corvusoft
             m_pimpl->properties.erase( name );
         }
         
-        bool Message::contains( const std::string& name )
+        bool Message::is_empty( ) const
+        {
+            return m_pimpl->properties.empty( );
+        }
+        
+        bool Message::contains( const std::string& name ) const
         {
             return m_pimpl->properties.count( name );
         }
