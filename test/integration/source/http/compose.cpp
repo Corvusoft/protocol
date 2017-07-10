@@ -52,25 +52,25 @@ TEST_CASE( "Compose" )
     
     message->set( "request:protocol", make_bytes( "http" ) );
     status = protocol->compose( adaptor, message );
-    REQUIRE( status == std::error_code( ) );
+    REQUIRE( status == error_code( ) );
     
     message->set( "request:protocol", make_bytes( "HTTP" ) );
     status = protocol->compose( adaptor, message );
-    REQUIRE( status == std::error_code( ) );
+    REQUIRE( status == error_code( ) );
     
     message->set( "request:protocol", make_bytes( "hTtP" ) );
     status = protocol->compose( adaptor, message );
-    REQUIRE( status == std::error_code( ) );
+    REQUIRE( status == error_code( ) );
     
     message->set( "response:protocol", make_bytes( "http" ) );
     status = protocol->compose( adaptor, message );
-    REQUIRE( status == std::error_code( ) );
+    REQUIRE( status == error_code( ) );
     
     message->set( "response:protocol", make_bytes( "HTTP" ) );
     status = protocol->compose( adaptor, message );
-    REQUIRE( status == std::error_code( ) );
+    REQUIRE( status == error_code( ) );
     
     message->set( "response:protocol", make_bytes( "hTtP" ) );
     status = protocol->compose( adaptor, message );
-    REQUIRE( status == std::error_code( ) );
+    REQUIRE( status == error_code( ) );
 }
