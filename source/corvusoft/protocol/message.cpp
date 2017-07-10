@@ -48,30 +48,19 @@ namespace corvusoft
             m_pimpl->properties.erase( name );
         }
         
-        bool Message::is_empty( ) const
-        {
-            return m_pimpl->properties.empty( );
-        }
-        
-        bool Message::contains( const std::string& name ) const
-        {
-            return m_pimpl->properties.count( name );
-        }
-        
         vector< const string > Message::get_names( void ) const
         {
             vector< const string > names;
             
             for ( const auto entry : m_pimpl->properties )
-                names.push_back( entry.first );
+                names.emplace_back( entry.first );
                 
             return names;
         }
         
         Bytes Message::get( const string& name, const Bytes& default_value ) const
         {
-            return ( m_pimpl->properties.count( name ) ) ?
-                   m_pimpl->properties.lower_bound( name )->second : default_value;
+            return ( m_pimpl->properties.count( name ) ) ? m_pimpl->properties.lower_bound( name )->second : default_value;
         }
         
         void Message::set( const string& name, const Bytes& value )

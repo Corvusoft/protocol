@@ -50,10 +50,6 @@ namespace corvusoft
                 
                 void erase( const std::string& name );
                 
-                bool is_empty( void ) const;
-                
-                bool contains( const std::string& name ) const;
-                
                 //Getters
                 std::vector< const std::string > get_names( void ) const;
                 
@@ -67,7 +63,6 @@ namespace corvusoft
                 //Operators
                 
                 //Properties
-                //add iterators for duplicat fieldnames.
                 
             protected:
                 //Friends

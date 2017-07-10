@@ -39,5 +39,5 @@ TEST_CASE( "Parse" )
     
     protocol = make_shared< HTTP >( );
     status = protocol->parse( adaptor, message );
-    REQUIRE( status == error_code( ) );
+    REQUIRE( status == std::errc::wrong_protocol_type );
 }

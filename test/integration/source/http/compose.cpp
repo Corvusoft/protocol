@@ -9,6 +9,7 @@
 
 //External Includes
 #include <catch.hpp>
+#include <corvusoft/core/byte.hpp>
 
 //System Namespaces
 using std::error_code;
@@ -20,6 +21,8 @@ using corvusoft::protocol::HTTP;
 using corvusoft::protocol::Message;
 
 //External Namespaces
+using corvusoft::core::Bytes;
+using corvusoft::core::make_bytes;
 
 TEST_CASE( "Compose" )
 {
@@ -39,5 +42,29 @@ TEST_CASE( "Compose" )
     
     protocol = make_shared< HTTP >( );
     status = protocol->compose( adaptor, message );
-    REQUIRE( status == error_code( ) );
+    REQUIRE( status == std::errc::wrong_protocol_type );
+    
+    message->set( "request:protocol", make_bytes( "http" ) );
+    status = protocol->compose( adaptor, message );
+    REQUIRE( status == std::error_code( ) );
+    
+    message->set( "request:protocol", make_bytes( "HTTP" ) );
+    status = protocol->compose( adaptor, message );
+    REQUIRE( status == std::error_code( ) );
+    
+    message->set( "request:protocol", make_bytes( "hTtP" ) );
+    status = protocol->compose( adaptor, message );
+    REQUIRE( status == std::error_code( ) );
+    
+    message->set( "response:protocol", make_bytes( "http" ) );
+    status = protocol->compose( adaptor, message );
+    REQUIRE( status == std::error_code( ) );
+    
+    message->set( "response:protocol", make_bytes( "HTTP" ) );
+    status = protocol->compose( adaptor, message );
+    REQUIRE( status == std::error_code( ) );
+    
+    message->set( "response:protocol", make_bytes( "hTtP" ) );
+    status = protocol->compose( adaptor, message );
+    REQUIRE( status == std::error_code( ) );
 }
