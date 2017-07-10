@@ -1,4 +1,5 @@
 //System Includes
+#include <list>
 #include <memory>
 #include <system_error>
 
@@ -12,6 +13,7 @@
 #include <corvusoft/core/byte.hpp>
 
 //System Namespaces
+using std::list;
 using std::error_code;
 using std::shared_ptr;
 using std::make_shared;
@@ -43,6 +45,10 @@ TEST_CASE( "Compose" )
     protocol = make_shared< HTTP >( );
     status = protocol->compose( adaptor, message );
     REQUIRE( status == std::errc::wrong_protocol_type );
+    
+    protocol = make_shared< HTTP >( );
+    status = protocol->compose( adaptor, list< const shared_ptr< Message > >( ) );
+    REQUIRE( status == error_code( ) );
     
     message->set( "request:protocol", make_bytes( "http" ) );
     status = protocol->compose( adaptor, message );

@@ -1,4 +1,5 @@
 //System Includes
+#include <list>
 #include <memory>
 #include <system_error>
 
@@ -11,6 +12,7 @@
 #include <catch.hpp>
 
 //System Namespaces
+using std::list;
 using std::error_code;
 using std::shared_ptr;
 using std::make_shared;
@@ -40,4 +42,8 @@ TEST_CASE( "Parse" )
     protocol = make_shared< HTTP >( );
     status = protocol->parse( adaptor, message );
     REQUIRE( status == std::errc::wrong_protocol_type );
+    
+    protocol = make_shared< HTTP >( );
+    status = protocol->parse( adaptor, list< const shared_ptr< Message > >( ) );
+    REQUIRE( status == error_code( ) );
 }

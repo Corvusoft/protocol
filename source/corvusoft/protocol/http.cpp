@@ -89,7 +89,7 @@ namespace corvusoft
         
         error_code HTTP::parse( const shared_ptr< Adaptor > adaptor, const list< const shared_ptr< Message > > messages ) noexcept
         {
-        
+            return error_code( );
         }
         
         //mentioned the reserved words in message message, path, etc...
@@ -118,7 +118,7 @@ namespace corvusoft
         
         error_code HTTP::compose( const shared_ptr< Adaptor > adaptor, const list< const shared_ptr< Message > > messages ) noexcept
         {
-        
+            return error_code( );
         }
         
         const string HTTP::get_name( void ) const
