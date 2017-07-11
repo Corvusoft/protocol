@@ -91,29 +91,40 @@ namespace corvusoft
                 static std::size_t parse_response( const std::vector< const std::string >& data, const std::shared_ptr< Message >& message, std::error_code& error )
                 {
                     const std::string status = data.at( 0 );
-                    std::string::size_type size = 0;
                     std::string::size_type start = 0;
                     std::string::size_type stop = status.find_first_of( '/' );
-                    message->set( "response:protocol", status.substr( start, stop ) );
+                    if ( stop == std::string::npos )
+                    {
+                        error = std::make_error_code( std::errc::bad_message );
+                        return 0;
+                    }
+                    else message->set( "response:protocol", status.substr( start, stop ) );
                     
-                    size += stop;
-                    start = stop;
+                    start = ++stop;
                     stop = status.find_first_of( ' ', start );
-                    message->set( "response:version", status.substr( start, stop ) );
+                    if ( stop == std::string::npos )
+                    {
+                        error = std::make_error_code( std::errc::bad_message );
+                        return 0;
+                    }
+                    else message->set( "response:version", status.substr( start, stop - start ) );
                     
-                    size += stop;
-                    start = stop;
-                    start = status.find_first_of( ' ', start );
-                    message->set( "response:status", status.substr( start, stop ) );
+                    start = ++stop;
+                    stop = status.find_first_of( ' ', start );
+                    if ( stop == std::string::npos )
+                    {
+                        error = std::make_error_code( std::errc::bad_message );
+                        return 0;
+                    }
+                    else message->set( "response:status", status.substr( start, stop - start ) );
                     
-                    size += stop;
-                    start = stop;
+                    start = ++stop;
                     message->set( "response:message", status.substr( start ) );
                     
-                    size += parse_headers( data, message, error );
+                    std::string::size_type size = parse_headers( data, message, error );
                     if ( error ) size = 0;
                     
-                    return size;
+                    return size + status.length( );
                 }
                 
                 static std::size_t parse_headers( const std::vector< const std::string >& data, const std::shared_ptr< Message >& message, std::error_code& error )
