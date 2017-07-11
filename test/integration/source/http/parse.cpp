@@ -10,6 +10,7 @@
 
 //External Includes
 #include <catch.hpp>
+#include <corvusoft/core/byte.hpp>
 
 //System Namespaces
 using std::list;
@@ -18,6 +19,8 @@ using std::shared_ptr;
 using std::make_shared;
 
 //Project Namespaces
+using corvusoft::core::Bytes;
+using corvusoft::core::make_bytes;
 using corvusoft::protocol::HTTP;
 using corvusoft::protocol::Message;
 
@@ -46,4 +49,10 @@ TEST_CASE( "Parse" )
     protocol = make_shared< HTTP >( );
     status = protocol->parse( adaptor, list< const shared_ptr< Message > >( ) );
     REQUIRE( status == error_code( ) );
+    
+    auto data = make_bytes( "jkhkjhouacdoiuaoicuzxlkcjzxj" );
+    adaptor = make_shared< MockAdaptor >( data );
+    protocol = make_shared< HTTP >( );
+    status = protocol->parse( adaptor, message );
+    REQUIRE( status == std::errc::wrong_protocol_type );
 }

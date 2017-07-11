@@ -10,6 +10,7 @@
 #include <vector>
 #include <memory>
 #include <ctype.h>
+#include <algorithm>
 
 //Project Includes
 
@@ -38,44 +39,53 @@ namespace corvusoft
             {
                 static bool is_request( const std::vector< const std::string >& value )
                 {
-                    static const std::regex pattern( "^[a-z]+\\s+.+\\s+HTTP/[0-9]+\\.[0-9]+[\n\r]+$", std::regex::icase );
+                    static const std::regex pattern( "^[a-z]+\\s+.+\\s+HTTP/[0-9]+\\.[0-9]+$", std::regex::icase );
                     return std::regex_match( value.at( 0 ), pattern );
                 }
                 
                 static bool is_response( const std::vector< const std::string >& value )
                 {
-                    static const std::regex pattern( "^HTTP/[0-9]+\\.[0-9]+\\s+[0-9]+\\s+.+[\r\n]+$", std::regex::icase );
+                    static const std::regex pattern( "^HTTP/[0-9]+\\.[0-9]+\\s+[0-9]+\\s+.+$", std::regex::icase );
                     return std::regex_match( value.at( 0 ), pattern );
                 }
                 
                 static std::size_t parse_request( const std::vector< const std::string >& data, const std::shared_ptr< Message >& message, std::error_code& error )
                 {
                     const std::string status = data.at( 0 );
-                    std::string::size_type size = 0;
                     std::string::size_type start = 0;
                     std::string::size_type stop = status.find_first_of( ' ' );
-                    message->set( "request:method", status.substr( start, stop ) );
+                    if ( stop == std::string::npos )
+                    {
+                        error = std::make_error_code( std::errc::bad_message );
+                        return 0;
+                    }
+                    else message->set( "request:method", status.substr( start, stop ) );
                     
-                    size += stop;
-                    start = stop;
+                    start = ++stop;
                     stop = status.find_first_of( ' ', start );
-                    message->set( "request:path", status.substr( start, stop ) );
+                    if ( stop == std::string::npos )
+                    {
+                        error = std::make_error_code( std::errc::bad_message );
+                        return 0;
+                    }
+                    else message->set( "request:path", status.substr( start, stop - start ) );
                     
-                    size += stop;
-                    start = stop;
-                    start = status.find_first_of( ' ', start );
-                    size += start;
+                    start = ++stop;
                     stop = status.find_first_of( '/', start );
-                    message->set( "request:protocol", status.substr( start, stop ) );
+                    if ( stop == std::string::npos )
+                    {
+                        error = std::make_error_code( std::errc::bad_message );
+                        return 0;
+                    }
+                    else message->set( "request:protocol", status.substr( start, stop - start ) );
                     
-                    size += stop;
-                    start = stop;
+                    start = ++stop;
                     message->set( "request:version", status.substr( start ) );
                     
-                    size += parse_headers( data, message, error );
+                    std::string::size_type size = parse_headers( data, message, error );
                     if ( error ) size = 0;
                     
-                    return size;
+                    return size + status.length( );
                 }
                 
                 static std::size_t parse_response( const std::vector< const std::string >& data, const std::shared_ptr< Message >& message, std::error_code& error )
@@ -113,7 +123,7 @@ namespace corvusoft
                     for ( std::string::size_type index = 1; index not_eq length; index++ )
                     {
                         const auto entry = data.at( index );
-                        if ( entry == "\r\n" ) break;
+                        if ( entry.empty( ) ) break;
                         
                         stop = entry.find_first_of( ':' );
                         if ( stop == std::string::npos )
@@ -122,7 +132,11 @@ namespace corvusoft
                             return 0;
                         }
                         
-                        message->set( entry.substr( 0, stop ), entry.substr( stop ) );
+                        const auto name = entry.substr( 0, stop );
+                        auto value = entry.substr( stop + 1 );
+                        if ( not value.empty( ) and value.at( 0 ) == ' ' ) value.erase( 0, 1 );
+                        
+                        message->set( name, value );
                     }
                     
                     return 0;
@@ -209,7 +223,7 @@ namespace corvusoft
                 {
                     return name not_eq "request:body"     and
                            name not_eq "request:path"     and
-                           name not_eq "request:status"   and
+                           name not_eq "request:method"   and
                            name not_eq "request:version"  and
                            name not_eq "request:protocol";
                 }
@@ -236,7 +250,7 @@ namespace corvusoft
                             if ( is_delimiter( *( position + 1 ) ) )
                                 position++;
                                 
-                            record.push_back( data );
+                            record.emplace_back( data );
                             data.clear( );
                         }
                         else data.push_back( byte );

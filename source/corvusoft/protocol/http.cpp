@@ -69,7 +69,7 @@ namespace corvusoft
             
             error_code error;
             const auto buffer = adaptor->consume( error );
-            if ( error ) return error; //must return no_message when empty.
+            if ( error ) return error;
             
             size_t length = 0;
             const auto data = m_pimpl->extract( buffer );
