@@ -154,7 +154,7 @@ namespace corvusoft
                     return 0;
                 }
                 
-                static std::size_t compose_request( core::Bytes& data, const std::shared_ptr< Message >& message, std::error_code& error )
+                static std::size_t compose_request( core::Bytes& data, const std::shared_ptr< Message >& message )
                 {
                     data = message->get( "request:method" );
                     data.emplace_back( ' ' );
@@ -181,7 +181,7 @@ namespace corvusoft
                     return data.size( );
                 }
                 
-                static std::size_t compose_response( core::Bytes& data, const std::shared_ptr< Message >& message, std::error_code& error )
+                static std::size_t compose_response( core::Bytes& data, const std::shared_ptr< Message >& message )
                 {
                     data = message->get( "response:protocol" );
                     data.emplace_back( '/' );
@@ -208,7 +208,7 @@ namespace corvusoft
                     return data.size( );
                 }
                 
-                static std::size_t compose_header( core::Bytes& data, const std::pair< const std::string, const core::Bytes >& property )
+                static void compose_header( core::Bytes& data, const std::pair< const std::string, const core::Bytes >& property )
                 {
                     const auto& name = property.first;
                     data.insert( data.end( ), name.begin( ), name.end( ) );
@@ -221,7 +221,7 @@ namespace corvusoft
                     data.emplace_back( '\n' );
                 }
                 
-                static std::size_t compose_body( core::Bytes& data, const core::Bytes& value )
+                static void compose_body( core::Bytes& data, const core::Bytes& value )
                 {
                     data.emplace_back( '\r' );
                     data.emplace_back( '\n' );

@@ -48,15 +48,10 @@ namespace corvusoft
         void Message::erase( const string& name )
         {
             auto& properties = m_pimpl->properties;
-            properties.erase(
-                remove_if( properties.begin( ), properties.end( ),
-                           [ &name ]( const auto & property )
+            properties.erase( remove_if( properties.begin( ), properties.end( ), [ &name ]( const auto & property )
             {
                 return property.first == name;
-            }
-                         ),
-            properties.end( )
-            );
+            } ), properties.end( ) );
         }
         
         vector< pair< string, Bytes > > Message::get( void ) const

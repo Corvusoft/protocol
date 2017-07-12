@@ -60,8 +60,6 @@ namespace corvusoft
             return error_code( );
         }
         
-        //mention in documentation this only reads to the start of body!
-        //add list arguemnt for parse and compose.
         error_code HTTP::parse( const shared_ptr< Adaptor > adaptor, const shared_ptr< Message > message ) noexcept
         {
             if ( adaptor == nullptr ) return make_error_code( std::errc::invalid_argument );
@@ -83,7 +81,6 @@ namespace corvusoft
                 return make_error_code( std::errc::wrong_protocol_type );
                 
             //adaptor->purge( length, error );
-            
             return error;
         }
         
@@ -92,7 +89,6 @@ namespace corvusoft
             return error_code( );
         }
         
-        //mentioned the reserved words in message message, path, etc...
         error_code HTTP::compose( const shared_ptr< Adaptor > adaptor, const shared_ptr< Message > message ) noexcept
         {
             if ( adaptor == nullptr ) return make_error_code( std::errc::invalid_argument );
@@ -103,9 +99,9 @@ namespace corvusoft
             size_t length = 0;
             
             if ( m_pimpl->uppercase( message->get( "request:protocol" ) ) == "HTTP" )
-                length = m_pimpl->compose_request( data, message, error );
+                length = m_pimpl->compose_request( data, message );
             else if ( m_pimpl->uppercase( message->get( "response:protocol" ) ) == "HTTP" )
-                length = m_pimpl->compose_response( data, message, error );
+                length = m_pimpl->compose_response( data, message );
             else
                 return std::make_error_code( std::errc::wrong_protocol_type );
                 
