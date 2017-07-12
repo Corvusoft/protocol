@@ -83,8 +83,8 @@ namespace corvusoft
                     start = ++stop;
                     message->set( "request:version", status.substr( start ) );
                     
-                    std::string::size_type size = parse_headers( data, message, error );
-                    if ( error ) size = 0;
+                    const auto size = parse_headers( data, message, error );
+                    if ( error ) return 0;
                     
                     return size + status.length( );
                 }
@@ -122,14 +122,15 @@ namespace corvusoft
                     start = ++stop;
                     message->set( "response:message", status.substr( start ) );
                     
-                    std::string::size_type size = parse_headers( data, message, error );
-                    if ( error ) size = 0;
+                    const auto size = parse_headers( data, message, error );
+                    if ( error ) return 0;
                     
                     return size + status.length( );
                 }
                 
                 static std::size_t parse_headers( const std::vector< const std::string >& data, const std::shared_ptr< Message >& message, std::error_code& error )
                 {
+                    std::size_t size = 0;
                     std::string::size_type stop = 0;
                     const auto length = data.size( );
                     for ( std::string::size_type index = 1; index not_eq length; index++ )
@@ -146,15 +147,20 @@ namespace corvusoft
                         
                         const auto name = entry.substr( 0, stop );
                         auto value = entry.substr( stop + 1 );
-                        if ( not value.empty( ) and value.at( 0 ) == ' ' ) value.erase( 0, 1 );
+                        if ( not value.empty( ) and value.at( 0 ) == ' ' )
+                        {
+                            size++;
+                            value.erase( 0, 1 );
+                        }
                         
                         message->set( name, value );
+                        size += name.length( ) + value.length( ) + 1;
                     }
                     
-                    return 0;
+                    return size;
                 }
                 
-                static std::size_t compose_request( core::Bytes& data, const std::shared_ptr< Message >& message )
+                static void compose_request( core::Bytes& data, const std::shared_ptr< Message >& message )
                 {
                     data = message->get( "request:method" );
                     data.emplace_back( ' ' );
@@ -177,11 +183,9 @@ namespace corvusoft
                             compose_header( data, property );
                             
                     compose_body( data, message->get( "request:body" ) );
-                    
-                    return data.size( );
                 }
                 
-                static std::size_t compose_response( core::Bytes& data, const std::shared_ptr< Message >& message )
+                static void compose_response( core::Bytes& data, const std::shared_ptr< Message >& message )
                 {
                     data = message->get( "response:protocol" );
                     data.emplace_back( '/' );
@@ -204,8 +208,6 @@ namespace corvusoft
                             compose_header( data, property );
                             
                     compose_body( data, message->get( "response:body" ) );
-                    
-                    return data.size( );
                 }
                 
                 static void compose_header( core::Bytes& data, const std::pair< const std::string, const core::Bytes >& property )
