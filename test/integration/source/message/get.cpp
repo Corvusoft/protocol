@@ -15,6 +15,7 @@
 using std::pair;
 using std::string;
 using std::vector;
+using std::make_pair;
 using std::make_shared;
 
 //Project Namespaces
@@ -27,12 +28,16 @@ using corvusoft::core::make_bytes;
 TEST_CASE( "Get" )
 {
     auto message = make_shared< Message >( );
-    REQUIRE( message->get( "name" ) == Bytes( { } ) );
-    REQUIRE( message->get( "name", make_bytes( "default" ) ) == Bytes( { 'd', 'e', 'f', 'a', 'u', 'l', 't' } ) );
+    message->set( "name", "value1" );
+    message->set( "name", "value2" );
+    REQUIRE( message->get( "name" ) == make_bytes( "value1" ) );
     
     vector< pair< string, Bytes > > properties;
+    properties.emplace_back( make_pair( "name", make_bytes( "value1" ) ) );
+    properties.emplace_back( make_pair( "name", make_bytes( "value2" ) ) );
     REQUIRE( message->get( ) == properties );
     
-    message->get( "name", properties );
-    REQUIRE( properties.empty( ) );
+    vector< pair< string, Bytes > > results;
+    message->get( "name", results );
+    REQUIRE( results == properties );
 }

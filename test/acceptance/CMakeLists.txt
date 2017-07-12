@@ -17,6 +17,14 @@ add_executable( compose_http_request_acceptance_test_suite ${SOURCE_DIR}/compose
 target_link_libraries( compose_http_request_acceptance_test_suite ${STATIC_LIBRARY_NAME} )
 add_test( compose_http_request_acceptance_test_suite ${EXECUTABLE_OUTPUT_PATH}/compose_http_request_acceptance_test_suite )
 
+add_executable( compose_http_response_acceptance_test_suite ${SOURCE_DIR}/compose_http_response.cpp )
+target_link_libraries( compose_http_response_acceptance_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( compose_http_response_acceptance_test_suite ${EXECUTABLE_OUTPUT_PATH}/compose_http_response_acceptance_test_suite )
+
+add_executable( parse_http_request_acceptance_test_suite ${SOURCE_DIR}/parse_http_request.cpp )
+target_link_libraries( parse_http_request_acceptance_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( parse_http_request_acceptance_test_suite ${EXECUTABLE_OUTPUT_PATH}/parse_http_request_acceptance_test_suite )
+
 add_executable( parse_http_response_acceptance_test_suite ${SOURCE_DIR}/parse_http_response.cpp )
 target_link_libraries( parse_http_response_acceptance_test_suite ${STATIC_LIBRARY_NAME} )
 add_test( parse_http_response_acceptance_test_suite ${EXECUTABLE_OUTPUT_PATH}/parse_http_response_acceptance_test_suite )

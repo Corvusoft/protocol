@@ -9,6 +9,7 @@
 #include <regex>
 #include <vector>
 #include <memory>
+#include <utility>
 #include <ctype.h>
 #include <algorithm>
 
@@ -171,9 +172,9 @@ namespace corvusoft
                     data.emplace_back( '\r' );
                     data.emplace_back( '\n' );
                     
-                    for ( const auto name : message->get_names( ) )
-                        if ( is_request_header( name ) )
-                            compose_header( data, name, message->get( name ) );
+                    for ( const auto property : message->get( ) )
+                        if ( is_request_header( property ) )
+                            compose_header( data, property );
                             
                     compose_body( data, message->get( "request:body" ) );
                     
@@ -198,21 +199,23 @@ namespace corvusoft
                     data.emplace_back( '\r' );
                     data.emplace_back( '\n' );
                     
-                    for ( const auto name : message->get_names( ) )
-                        if ( is_response_header( name ) )
-                            compose_header( data, name, message->get( name ) );
+                    for ( const auto property : message->get( ) )
+                        if ( is_response_header( property ) )
+                            compose_header( data, property );
                             
                     compose_body( data, message->get( "response:body" ) );
                     
                     return data.size( );
                 }
                 
-                static std::size_t compose_header( core::Bytes& data, const std::string& name, const core::Bytes& value )
+                static std::size_t compose_header( core::Bytes& data, const std::pair< const std::string, const core::Bytes >& property )
                 {
+                    const auto& name = property.first;
                     data.insert( data.end( ), name.begin( ), name.end( ) );
                     data.emplace_back( ':' );
                     data.emplace_back( ' ' );
                     
+                    const auto& value = property.second;
                     data.insert( data.end( ), value.begin( ), value.end( ) );
                     data.emplace_back( '\r' );
                     data.emplace_back( '\n' );
@@ -230,8 +233,9 @@ namespace corvusoft
                     return value == '\r' or value == '\n';
                 }
                 
-                static bool is_request_header( const std::string& name )
+                static bool is_request_header( const std::pair< const std::string, const core::Bytes >& property )
                 {
+                    const auto& name = property.first;
                     return name not_eq "request:body"     and
                            name not_eq "request:path"     and
                            name not_eq "request:method"   and
@@ -239,8 +243,9 @@ namespace corvusoft
                            name not_eq "request:protocol";
                 }
                 
-                static bool is_response_header( const std::string& name )
+                static bool is_response_header( const std::pair< const std::string, const core::Bytes >& property )
                 {
+                    const auto& name = property.first;
                     return name not_eq "response:body"     and
                            name not_eq "response:status"   and
                            name not_eq "response:version"  and

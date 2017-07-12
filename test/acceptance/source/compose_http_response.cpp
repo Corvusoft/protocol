@@ -28,25 +28,20 @@ using corvusoft::core::make_bytes;
 
 TEST_CASE( "Compose HTTP response" )
 {
-    auto data = make_bytes( );
     auto message = make_shared< Message >( );
+    message->set( "response:version", "1.0" );
+    message->set( "response:protocol", "HtTp" );
+    message->set( "Content-Length", "10" );
+    message->set( "content-type", "text/plain" );
+    message->set( "response:body", make_bytes( "0123456789" ) );
+    message->set( "response:status", "201" );
+    message->set( "response:message", "Created" );
+    
     auto adaptor = make_shared< MockAdaptor >( );
     auto protocol = make_shared< HTTP >( );
-    auto status = protocol->compose( adaptor, message );
-    REQUIRE( status == error_code( ) );
-    REQUIRE( adaptor->get_data( ) == data );
-    
-    message->set( "version", "1.0" );
-    message->set( "protocol", "HtTp" );
-    message->set( "Content-Length", "10" );
-    message->set( "content-Type", "text/plain" );
-    message->set( "body", make_bytes( "0123456789" ) );
-    message->set( "status", "201" );
-    message->set( "message", "Created" );
-    
-    status = protocol->compose( adaptor, message );
+    const auto status = protocol->compose( adaptor, message );
     REQUIRE( status == error_code( ) );
     
-    data = make_bytes( "HtTp/1.0 201 Created\r\nContent-Length: 10\r\nContent-Type: text/plain\r\n\r\n0123456789" );
+    const auto data = make_bytes( "HtTp/1.0 201 Created\r\nContent-Length: 10\r\ncontent-type: text/plain\r\n\r\n0123456789" );
     REQUIRE( adaptor->get_data( ) == data );
 }

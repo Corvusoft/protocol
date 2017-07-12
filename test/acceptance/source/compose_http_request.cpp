@@ -32,16 +32,16 @@ TEST_CASE( "Compose HTTP request" )
     message->set( "request:method", "GeT" );
     message->set( "request:version", "1.2" );
     message->set( "request:protocol", "HtTp" );
-    message->set( "Content-Length", "10" );
-    message->set( "content-Type", "text/plain" );
+    message->set( "content-Length", "10" );
+    message->set( "Content-Type", "text/plain" );
     message->set( "request:body", make_bytes( "0123456789" ) );
     message->set( "request:path", "/query/endpoint?a=1&B=3#Title" );
     
     auto adaptor = make_shared< MockAdaptor >( );
     auto protocol = make_shared< HTTP >( );
-    auto status = protocol->compose( adaptor, message );
+    const auto status = protocol->compose( adaptor, message );
     REQUIRE( status == error_code( ) );
     
-    auto data = make_bytes( "GeT /query/endpoint?a=1&B=3#Title HtTp/1.2\r\nContent-Length: 10\r\ncontent-Type: text/plain\r\n\r\n0123456789" );
+    const auto data = make_bytes( "GeT /query/endpoint?a=1&B=3#Title HtTp/1.2\r\ncontent-Length: 10\r\nContent-Type: text/plain\r\n\r\n0123456789" );
     REQUIRE( adaptor->get_data( ) == data );
 }

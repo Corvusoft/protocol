@@ -49,10 +49,6 @@ add_executable( message_erase_unit_test_suite ${SOURCE_DIR}/message/erase.cpp )
 target_link_libraries( message_erase_unit_test_suite ${STATIC_LIBRARY_NAME} )
 add_test( message_erase_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_erase_unit_test_suite )
 
-add_executable( message_get_names_unit_test_suite ${SOURCE_DIR}/message/get_names.cpp )
-target_link_libraries( message_get_names_unit_test_suite ${STATIC_LIBRARY_NAME} )
-add_test( message_get_names_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_get_names_unit_test_suite )
-
 add_executable( message_get_unit_test_suite ${SOURCE_DIR}/message/get.cpp )
 target_link_libraries( message_get_unit_test_suite ${STATIC_LIBRARY_NAME} )
 add_test( message_get_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_get_unit_test_suite )
