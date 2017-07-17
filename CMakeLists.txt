@@ -6,7 +6,7 @@ message( "Copyright 2013-2017, Corvusoft Ltd, All Rights Reserved." )
 #
 # Dependencies
 #
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake" )
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake" )
 
 find_package( core REQUIRED )
 find_package( catch REQUIRED )
@@ -16,9 +16,9 @@ find_package( network REQUIRED )
 #
 # Configuration
 #
-include( "${CMAKE_SOURCE_DIR}/cmake/configuration.cmake" )
+include( "${PROJECT_SOURCE_DIR}/cmake/configuration.cmake" )
 
-set( INCLUDE_DIR "${CMAKE_SOURCE_DIR}/source" )
+set( INCLUDE_DIR "${PROJECT_SOURCE_DIR}/source" )
 include_directories( ${INCLUDE_DIR} SYSTEM ${core_INCLUDE} ${runloop_INCLUDE} ${network_INCLUDE} )
 
 #
@@ -42,9 +42,9 @@ set_target_properties( ${SHARED_LIBRARY_NAME} PROPERTIES SOVERSION ${PROJECT_VER
 target_link_libraries( ${SHARED_LIBRARY_NAME} ${core_SHARED_LIBRARY} ${runloop_SHARED_LIBRARY} )
 
 enable_testing( )
-add_subdirectory( "${CMAKE_SOURCE_DIR}/test/unit" )
-add_subdirectory( "${CMAKE_SOURCE_DIR}/test/acceptance" )
-add_subdirectory( "${CMAKE_SOURCE_DIR}/test/integration" )
+add_subdirectory( "${PROJECT_SOURCE_DIR}/test/unit" )
+add_subdirectory( "${PROJECT_SOURCE_DIR}/test/acceptance" )
+add_subdirectory( "${PROJECT_SOURCE_DIR}/test/integration" )
 
 #
 # Install
