@@ -76,16 +76,21 @@ class MockAdaptor final : public corvusoft::network::Adaptor
             return std::error_code( );
         }
         
-        virtual const corvusoft::core::Bytes peek( std::error_code& ) override
-        {
-            return m_data;
-        }
-        
         virtual const corvusoft::core::Bytes consume( std::error_code& ) override
         {
             return m_data;
         }
         
+        virtual std::size_t purge( const std::size_t, std::error_code& ) override
+        {
+            return 0;
+        }
+                
+        virtual std::size_t flush( const std::size_t, std::error_code& ) override
+        {
+            return 0;
+        }    
+
         virtual std::size_t produce( const corvusoft::core::Bytes& data, std::error_code& ) override
         {
             m_data = data;
@@ -98,7 +103,7 @@ class MockAdaptor final : public corvusoft::network::Adaptor
             return m_data;
         }
         
-        virtual std::string get_key( void ) const override
+        virtual std::string get_name( void ) const override
         {
             return "";
         }
