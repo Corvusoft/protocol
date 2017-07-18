@@ -17,6 +17,7 @@ find_package( network REQUIRED )
 # Configuration
 #
 set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_INSTALL_LIBDIR library )
 set( INCLUDE_DIR "${PROJECT_SOURCE_DIR}/source" )
 
 if ( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
@@ -70,10 +71,6 @@ add_subdirectory( "${PROJECT_SOURCE_DIR}/test/integration" )
 # Install
 #
 file( GLOB ARTIFACTS "source/corvusoft/${PROJECT_NAME}/*.hpp" )
-
-if ( NOT DEFINED CMAKE_INSTALL_LIBDIR )
-    set( CMAKE_INSTALL_LIBDIR library )
-endif ( )
 
 install( FILES ${ARTIFACTS} DESTINATION "${CMAKE_INSTALL_PREFIX}/include/corvusoft/${PROJECT_NAME}" )
 install( TARGETS ${STATIC_LIBRARY_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT library )
