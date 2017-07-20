@@ -64,7 +64,7 @@ target_link_libraries( ${SHARED_LIBRARY_NAME} ${core_SHARED_LIBRARY} ${runloop_S
 
 enable_testing( )
 add_subdirectory( "${PROJECT_SOURCE_DIR}/test/unit" )
-add_subdirectory( "${PROJECT_SOURCE_DIR}/test/acceptance" )
+add_subdirectory( "${PROJECT_SOURCE_DIR}/test/feature" )
 add_subdirectory( "${PROJECT_SOURCE_DIR}/test/integration" )
 
 #
