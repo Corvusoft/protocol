@@ -30,7 +30,4 @@ TEST_CASE( "Get" )
     
     multimap< string, Bytes > properties;
     REQUIRE( message->get( ) == properties );
-    
-    message->get( "name", properties );
-    REQUIRE( properties.empty( ) );
 }

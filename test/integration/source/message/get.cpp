@@ -35,8 +35,4 @@ TEST_CASE( "Get" )
     properties.emplace( make_pair( "name", make_bytes( "value1" ) ) );
     properties.emplace( make_pair( "name", make_bytes( "value2" ) ) );
     REQUIRE( message->get( ) == properties );
-    
-    multimap< string, Bytes > results;
-    message->get( "name", results );
-    REQUIRE( results == properties );
 }

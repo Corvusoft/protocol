@@ -57,8 +57,6 @@ namespace corvusoft
                 
                 core::Bytes get( const std::string& name, const core::Bytes& default_value = { } ) const;
                 
-                void get( const std::string& name, std::multimap< std::string, core::Bytes >& value ) const;
-                
                 //Setters
                 void set( const std::string& name, const core::Bytes& value );
                 

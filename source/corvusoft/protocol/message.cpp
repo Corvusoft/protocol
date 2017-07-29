@@ -52,21 +52,15 @@ namespace corvusoft
         {
             return m_pimpl->properties.count( name );
         }
-        
+
         multimap< string, Bytes > Message::get( void ) const
         {
             return m_pimpl->properties;
         }
-        
+
         Bytes Message::get( const string& name, const Bytes& default_value ) const
-        {   
-            return m_pimpl->properties.count( name ) ? m_pimpl->properties.lower_bound( name )->second : default_value;
-        }
-        
-        void Message::get( const string& name, multimap< string, Bytes >& values ) const
         {
-            const auto range = m_pimpl->properties.equal_range( name );
-            values.insert( range.first, range.second );
+            return m_pimpl->properties.count( name ) ? m_pimpl->properties.lower_bound( name )->second : default_value;
         }
         
         void Message::set( const string& name, const Bytes& value )
