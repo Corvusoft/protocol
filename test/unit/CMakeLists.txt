@@ -53,6 +53,10 @@ add_executable( message_get_unit_test_suite ${SOURCE_DIR}/message/get.cpp )
 target_link_libraries( message_get_unit_test_suite ${STATIC_LIBRARY_NAME} )
 add_test( message_get_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_get_unit_test_suite )
 
+add_executable( message_has_unit_test_suite ${SOURCE_DIR}/message/has.cpp )
+target_link_libraries( message_has_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( message_has_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_has_unit_test_suite )
+
 add_executable( message_set_unit_test_suite ${SOURCE_DIR}/message/set.cpp )
 target_link_libraries( message_set_unit_test_suite ${STATIC_LIBRARY_NAME} )
 add_test( message_set_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_set_unit_test_suite )

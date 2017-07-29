@@ -1,8 +1,7 @@
 //System Includes
-#include <vector>
+#include <map>
 #include <string>
 #include <memory>
-#include <utility>
 
 //Project Includes
 #include "corvusoft/protocol/message.hpp"
@@ -12,9 +11,8 @@
 #include <corvusoft/core/byte.hpp>
 
 //System Namespaces
-using std::pair;
 using std::string;
-using std::vector;
+using std::multimap;
 using std::make_shared;
 
 //Project Namespaces
@@ -30,7 +28,7 @@ TEST_CASE( "Get" )
     REQUIRE( message->get( "name" ) == Bytes( { } ) );
     REQUIRE( message->get( "name", make_bytes( "default" ) ) == Bytes( { 'd', 'e', 'f', 'a', 'u', 'l', 't' } ) );
     
-    vector< pair< string, Bytes > > properties;
+    multimap< string, Bytes > properties;
     REQUIRE( message->get( ) == properties );
     
     message->get( "name", properties );

@@ -3,7 +3,7 @@
  */
 
 //System Includes
-#include <algorithm>
+#include <utility>
 
 //Project Includes
 #include "corvusoft/protocol/message.hpp"
@@ -12,11 +12,9 @@
 //External Includes
 
 //System Namespaces
-using std::pair;
-using std::vector;
 using std::string;
+using std::multimap;
 using std::make_pair;
-using std::remove_if;
 using std::unique_ptr;
 
 //Project Namespaces
@@ -47,36 +45,33 @@ namespace corvusoft
         
         void Message::erase( const string& name )
         {
-            auto& properties = m_pimpl->properties;
-            properties.erase( remove_if( properties.begin( ), properties.end( ), [ &name ]( const auto & property )
-            {
-                return property.first == name;
-            } ), properties.end( ) );
+            m_pimpl->properties.erase( name );
+        }
+
+        bool Message::has( const string& name ) const
+        {
+            return m_pimpl->properties.count( name );
         }
         
-        vector< pair< string, Bytes > > Message::get( void ) const
+        multimap< string, Bytes > Message::get( void ) const
         {
             return m_pimpl->properties;
         }
         
         Bytes Message::get( const string& name, const Bytes& default_value ) const
-        {
-            vector< pair< string, Bytes > > properties;
-            get( name, properties );
-            
-            return properties.empty( ) ? default_value : properties.at( 0 ).second;
+        {   
+            return m_pimpl->properties.count( name ) ? m_pimpl->properties.lower_bound( name )->second : default_value;
         }
         
-        void Message::get( const string& name, vector< pair< string, Bytes > >& values ) const
+        void Message::get( const string& name, multimap< string, Bytes >& values ) const
         {
-            for ( const auto property : m_pimpl->properties )
-                if ( property.first == name )
-                    values.emplace_back( property );
+            const auto range = m_pimpl->properties.equal_range( name );
+            values.insert( range.first, range.second );
         }
         
         void Message::set( const string& name, const Bytes& value )
         {
-            m_pimpl->properties.emplace_back( make_pair( name, value ) );
+            m_pimpl->properties.emplace( make_pair( name, value ) );
         }
         
         void Message::set( const string& name, const string& value )

@@ -40,13 +40,13 @@ namespace corvusoft
             {
                 static bool is_request( const std::vector< const std::string >& value )
                 {
-                    static const std::regex pattern( "^[a-z]+\\s+.+\\s+HTTP/[0-9]+\\.[0-9]+$", std::regex::icase );
+                    static const std::regex pattern( "^[a-z]+\\s+.+\\s+HTTP\\/[0-9]+\\.[0-9]+$", std::regex::icase );
                     return std::regex_match( value.at( 0 ), pattern );
                 }
                 
                 static bool is_response( const std::vector< const std::string >& value )
                 {
-                    static const std::regex pattern( "^HTTP/[0-9]+\\.[0-9]+\\s+[0-9]+\\s+.+$", std::regex::icase );
+                    static const std::regex pattern( "^HTTP\\/[0-9]+\\.[0-9]+\\s+[0-9]+(?:\\s+.*){0,1}$", std::regex::icase );
                     return std::regex_match( value.at( 0 ), pattern );
                 }
                 
@@ -112,15 +112,14 @@ namespace corvusoft
                     
                     start = ++stop;
                     stop = status.find_first_of( ' ', start );
-                    if ( stop == std::string::npos )
+                    if ( stop == std::string::npos ) stop = status.length( );    
+                    message->set( "response:status", status.substr( start, stop - start ) );
+
+                    if ( stop not_eq status.length( ) )
                     {
-                        error = std::make_error_code( std::errc::bad_message );
-                        return 0;
+                        start = ++stop;
+                        message->set( "response:message", status.substr( start ) );
                     }
-                    else message->set( "response:status", status.substr( start, stop - start ) );
-                    
-                    start = ++stop;
-                    message->set( "response:message", status.substr( start ) );
                     
                     const auto size = parse_headers( data, message, error );
                     if ( error ) return 0;

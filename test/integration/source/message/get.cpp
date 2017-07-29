@@ -1,5 +1,5 @@
 //System Includes
-#include <vector>
+#include <map>
 #include <string>
 #include <memory>
 #include <utility>
@@ -12,9 +12,8 @@
 #include <corvusoft/core/byte.hpp>
 
 //System Namespaces
-using std::pair;
 using std::string;
-using std::vector;
+using std::multimap;
 using std::make_pair;
 using std::make_shared;
 
@@ -32,12 +31,12 @@ TEST_CASE( "Get" )
     message->set( "name", "value2" );
     REQUIRE( message->get( "name" ) == make_bytes( "value1" ) );
     
-    vector< pair< string, Bytes > > properties;
-    properties.emplace_back( make_pair( "name", make_bytes( "value1" ) ) );
-    properties.emplace_back( make_pair( "name", make_bytes( "value2" ) ) );
+    multimap< string, Bytes > properties;
+    properties.emplace( make_pair( "name", make_bytes( "value1" ) ) );
+    properties.emplace( make_pair( "name", make_bytes( "value2" ) ) );
     REQUIRE( message->get( ) == properties );
     
-    vector< pair< string, Bytes > > results;
+    multimap< string, Bytes > results;
     message->get( "name", results );
     REQUIRE( results == properties );
 }

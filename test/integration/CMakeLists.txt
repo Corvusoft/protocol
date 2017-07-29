@@ -32,3 +32,7 @@ add_test( message_erase_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/message
 add_executable( message_get_integration_test_suite ${SOURCE_DIR}/message/get.cpp )
 target_link_libraries( message_get_integration_test_suite ${STATIC_LIBRARY_NAME} )
 add_test( message_get_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_get_integration_test_suite )
+
+add_executable( message_has_integration_test_suite ${SOURCE_DIR}/message/has.cpp )
+target_link_libraries( message_has_integration_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( message_has_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_has_integration_test_suite )

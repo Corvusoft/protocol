@@ -6,9 +6,8 @@
 #define _CORVUSOFT_PROTOCOL_DETAIL_MESSAGE_IMPL_H 1
 
 //System Includes
+#include <map>
 #include <string>
-#include <vector>
-#include <utility>
 
 //Project Includes
 
@@ -35,7 +34,7 @@ namespace corvusoft
             
             struct MessageImpl
             {
-                std::vector< std::pair< std::string, core::Bytes > > properties { };
+                std::multimap< std::string, core::Bytes > properties { };
             };
         }
     }

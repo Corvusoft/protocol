@@ -6,10 +6,9 @@
 #define _CORVUSOFT_PROTOCOL_MESSAGE_H 1
 
 //System Includes
-#include <vector>
+#include <map>
 #include <string>
 #include <memory>
-#include <utility>
 
 //Project Includes
 #include <corvusoft/core/byte.hpp>
@@ -51,12 +50,14 @@ namespace corvusoft
                 
                 void erase( const std::string& name );
                 
+                bool has( const std::string& name ) const;
+
                 //Getters
-                std::vector< std::pair< std::string, core::Bytes > > get( void ) const;
+                std::multimap< std::string, core::Bytes > get( void ) const;
                 
                 core::Bytes get( const std::string& name, const core::Bytes& default_value = { } ) const;
                 
-                void get( const std::string& name, std::vector< std::pair< std::string, core::Bytes > >& value ) const;
+                void get( const std::string& name, std::multimap< std::string, core::Bytes >& value ) const;
                 
                 //Setters
                 void set( const std::string& name, const core::Bytes& value );
