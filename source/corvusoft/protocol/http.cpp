@@ -3,10 +3,10 @@
  */
 
 //System Includes
-#include <vector>
 
 //Project Includes
 #include "corvusoft/protocol/http.hpp"
+#include "corvusoft/protocol/http_message.hpp"
 #include "corvusoft/protocol/detail/http_impl.hpp"
 
 //External Includes
@@ -16,13 +16,17 @@
 #include <corvusoft/network/adaptor.hpp>
 
 //System Namespaces
-using std::list;
+using std::bind;
 using std::size_t;
 using std::string;
-using std::vector;
+using std::function;
 using std::shared_ptr;
 using std::error_code;
+using std::make_shared;
 using std::make_error_code;
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
 
 //Project Namespaces
 using corvusoft::protocol::detail::HTTPImpl;
@@ -39,7 +43,7 @@ namespace corvusoft
 {
     namespace protocol
     {
-        HTTP::HTTP( void ) : Protocol( ),
+        HTTP::HTTP( const shared_ptr< RunLoop > ) : Protocol( ),
             m_pimpl( new HTTPImpl )
         {
             return;
@@ -50,74 +54,50 @@ namespace corvusoft
             return;
         }
         
-        error_code HTTP::teardown( void ) noexcept
+        error_code HTTP::setup( const shared_ptr< const Settings > )
+        {
+            //setup timeout/circuit-breaker.
+            return error_code( );
+        }
+        
+        error_code HTTP::teardown( void )
         {
             return error_code( );
         }
         
-        error_code HTTP::setup( const shared_ptr< RunLoop >, const shared_ptr< const Settings > ) noexcept
+        void HTTP::initiate( const shared_ptr< Adaptor > adaptor, const function< error_code ( const shared_ptr< Adaptor >, const error_code ) > completion_handler )
         {
-            return error_code( );
+            if ( completion_handler not_eq nullptr )
+                completion_handler( adaptor, error_code( ) );
         }
         
-        error_code HTTP::parse( const shared_ptr< Adaptor > adaptor, const shared_ptr< Message > message ) noexcept
+        void HTTP::terminate( const shared_ptr< Adaptor > adaptor, const function< error_code ( const shared_ptr< Adaptor >, const error_code ) > completion_handler )
         {
-            if ( adaptor == nullptr ) return make_error_code( std::errc::invalid_argument );
-            if ( message == nullptr ) return make_error_code( std::errc::invalid_argument );
-            
-            error_code error;
-            const auto buffer = adaptor->consume( error );
-            if ( error ) return error;
-            
-            size_t length = 0;
-            const auto data = m_pimpl->extract( buffer );
-            if ( data.size( ) <= 1 ) return make_error_code( std::errc::wrong_protocol_type );
-            
-            if ( m_pimpl->is_request( data ) )
-                length = m_pimpl->parse_request( data, message, error );
-            else if ( m_pimpl->is_response( data ) )
-                length = m_pimpl->parse_response( data, message, error );
+            if ( completion_handler not_eq nullptr )
+                completion_handler( adaptor, error_code( ) );
+        }
+        
+        void HTTP::parse( const shared_ptr< Adaptor > adaptor, const function< error_code ( const shared_ptr< Adaptor >, const shared_ptr< Message >, const error_code ) > completion_handler )
+        {
+            if ( completion_handler == nullptr ) return;
+            else if ( adaptor == nullptr ) completion_handler( adaptor, nullptr, make_error_code( std::errc::invalid_argument ) );
             else
-                return make_error_code( std::errc::wrong_protocol_type );
-                
-            //adaptor->purge( length, error );
-            return error;
+            {
+                const function< error_code ( const shared_ptr< Adaptor >, const Bytes, const error_code ) > consumption_handler = bind( m_pimpl->parse, _1, _2, _3, make_shared< HTTPMessage >( ), completion_handler );
+                adaptor->consume( consumption_handler );
+            }
         }
         
-        error_code HTTP::parse( const shared_ptr< Adaptor > adaptor, const list< const shared_ptr< Message > > messages ) noexcept
+        void HTTP::compose( const shared_ptr< Adaptor > adaptor, const shared_ptr< Message > message, const function< error_code ( const shared_ptr< Adaptor >, const error_code ) > completion_handler )
         {
-            return error_code( );
-        }
-        
-        error_code HTTP::compose( const shared_ptr< Adaptor > adaptor, const shared_ptr< Message > message ) noexcept
-        {
-            if ( adaptor == nullptr ) return make_error_code( std::errc::invalid_argument );
-            if ( message == nullptr ) return make_error_code( std::errc::invalid_argument );
-            
-            Bytes data;
-            if ( m_pimpl->uppercase( message->get( "request:protocol" ) ) == "HTTP" )
-                m_pimpl->compose_request( data, message );
-            else if ( m_pimpl->uppercase( message->get( "response:protocol" ) ) == "HTTP" )
-                m_pimpl->compose_response( data, message );
+            if ( completion_handler == nullptr ) return;
+            else if ( adaptor == nullptr ) completion_handler( adaptor, make_error_code( std::errc::invalid_argument ) );
+            else if ( message == nullptr ) completion_handler( adaptor, make_error_code( std::errc::invalid_argument ) );
             else
-                return std::make_error_code( std::errc::wrong_protocol_type );
-                
-            error_code error;
-            adaptor->produce( data, error );
-            if ( not error )
-                //adaptor->flush( data.size( ), error );
-                
-                return error;
-        }
-        
-        error_code HTTP::compose( const shared_ptr< Adaptor > adaptor, const list< const shared_ptr< Message > > messages ) noexcept
-        {
-            return error_code( );
-        }
-        
-        const string HTTP::get_name( void ) const
-        {
-            return "HTTP";
+            {
+                const function< error_code ( const shared_ptr< Adaptor >, const size_t, const error_code ) > production_handler = bind( m_pimpl->compose, _1, _2, _3, completion_handler );
+                adaptor->produce( message->to_bytes( ), production_handler );
+            }
         }
     }
 }

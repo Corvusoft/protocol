@@ -2,15 +2,17 @@
  * Copyright 2013-2017, Corvusoft Ltd, All Rights Reserved.
  */
 
-#ifndef _CORVUSOFT_PROTOCOL_MESSAGE_H
-#define _CORVUSOFT_PROTOCOL_MESSAGE_H 1
+#ifndef _CORVUSOFT_PROTOCOL_HTTP_MESSAGE_H
+#define _CORVUSOFT_PROTOCOL_HTTP_MESSAGE_H 1
 
 //System Includes
+#include <string>
 
 //Project Includes
-#include <corvusoft/core/byte.hpp>
+#include <corvusoft/protocol/message.hpp>
 
 //External Includes
+#include <corvusoft/core/byte.hpp>
 
 //System Namespaces
 
@@ -26,7 +28,7 @@ namespace corvusoft
     {
         //Forward Declarations
         
-        class Message
+        class HTTPMessage final : public Message
         {
             public:
                 //Friends
@@ -34,21 +36,24 @@ namespace corvusoft
                 //Definitions
                 
                 //Constructors
+                HTTPMessage( void );
+                
+                virtual ~HTTPMessage( void );
                 
                 //Functionality
-                virtual bool is_finalised( void ) const = 0;
+                bool is_finalised( void ) const override;
                 
-                virtual bool is_malformed( void ) const = 0;
+                bool is_malformed( void ) const override;
                 
-                virtual core::Bytes to_bytes( void ) const = 0;
+                core::Bytes to_bytes( void ) const override;
                 
-                virtual void assemble( const core::Bytes& data ) = 0;
+                void assemble( const core::Bytes& data ) override;
                 
                 //Getters
-                virtual core::Bytes get( const std::string& name ) const = 0;
+                core::Bytes get( const std::string& name ) const override;
                 
                 //Setters
-                virtual void set( const std::string& name, const core::Bytes& value ) = 0;
+                void set( const std::string& name, const core::Bytes& value ) override;
                 
                 //Operators
                 
@@ -60,9 +65,6 @@ namespace corvusoft
                 //Definitions
                 
                 //Constructors
-                Message( void ) = default;
-                
-                virtual ~Message( void ) = default;
                 
                 //Functionality
                 
@@ -80,7 +82,7 @@ namespace corvusoft
                 //Definitions
                 
                 //Constructors
-                Message( const Message& original ) = delete;
+                HTTPMessage( const HTTPMessage& original ) = delete;
                 
                 //Functionality
                 
@@ -89,11 +91,11 @@ namespace corvusoft
                 //Setters
                 
                 //Operators
-                Message& operator =( const Message& value ) = delete;
+                HTTPMessage& operator =( const HTTPMessage& value ) = delete;
                 
                 //Properties
         };
     }
 }
 
-#endif  /* _CORVUSOFT_PROTOCOL_MESSAGE_H */
+#endif  /* _CORVUSOFT_PROTOCOL_HTTP_MESSAGE_H */

@@ -6,9 +6,9 @@
 #define _CORVUSOFT_PROTOCOL_HTTP_H 1
 
 //System Includes
-#include <list>
 #include <string>
 #include <memory>
+#include <functional>
 #include <system_error>
 
 //Project Includes
@@ -53,25 +53,24 @@ namespace corvusoft
                 //Definitions
                 
                 //Constructors
-                HTTP( void );
+                HTTP( const std::shared_ptr< core::RunLoop > runloop );
                 
                 virtual ~HTTP( void );
                 
                 //Functionality
-                virtual std::error_code teardown( void ) noexcept override;
+                std::error_code setup( const std::shared_ptr< const core::Settings > settings = nullptr ) override;
                 
-                virtual std::error_code setup( const std::shared_ptr< core::RunLoop > runloop, const std::shared_ptr< const core::Settings > settings = nullptr ) noexcept override;
+                std::error_code teardown( void ) override;
                 
-                virtual std::error_code parse( const std::shared_ptr< network::Adaptor > adaptor, const std::shared_ptr< Message > message ) noexcept override;
+                void initiate( const std::shared_ptr< network::Adaptor > adaptor, const std::function< std::error_code ( const std::shared_ptr< network::Adaptor >, const std::error_code ) > completion_handler ) override;
                 
-                virtual std::error_code parse( const std::shared_ptr< network::Adaptor > adaptor, const std::list< const std::shared_ptr< Message > > messages ) noexcept override;
+                void terminate( const std::shared_ptr< network::Adaptor > adaptor, const std::function< std::error_code ( const std::shared_ptr< network::Adaptor >, const std::error_code ) > completion_handler ) override;
                 
-                virtual std::error_code compose( const std::shared_ptr< network::Adaptor > adaptor, const std::shared_ptr< Message > message ) noexcept override;
+                void parse( const std::shared_ptr< network::Adaptor > adaptor, const std::function< std::error_code ( const std::shared_ptr< network::Adaptor >, const std::shared_ptr< Message >, const std::error_code ) > completion_handler ) override;
                 
-                virtual std::error_code compose( const std::shared_ptr< network::Adaptor > adaptor, const std::list< const std::shared_ptr< Message > > messages ) noexcept override;
+                void compose( const std::shared_ptr< network::Adaptor > adaptor, const std::shared_ptr< Message > message, const std::function< std::error_code ( const std::shared_ptr< network::Adaptor >, const std::error_code ) > completion_handler ) override;
                 
                 //Getters
-                virtual const std::string get_name( void ) const override;
                 
                 //Setters
                 
@@ -102,6 +101,8 @@ namespace corvusoft
                 //Definitions
                 
                 //Constructors
+                HTTP( void ) = delete;
+                
                 HTTP( const HTTP& original ) = delete;
                 
                 //Functionality

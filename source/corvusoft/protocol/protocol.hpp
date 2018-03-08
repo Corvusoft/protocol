@@ -49,20 +49,19 @@ namespace corvusoft
                 //Constructors
                 
                 //Functionality
-                virtual std::error_code teardown( void ) noexcept = 0;
+                virtual std::error_code setup( const std::shared_ptr< const core::Settings > settings = nullptr ) = 0;
                 
-                virtual std::error_code setup( const std::shared_ptr< core::RunLoop > runloop, const std::shared_ptr< const core::Settings > settings = nullptr ) noexcept = 0;
+                virtual std::error_code teardown( void ) = 0;
                 
-                virtual std::error_code parse( const std::shared_ptr< network::Adaptor > adaptor, const std::shared_ptr< Message > message ) noexcept = 0;
+                virtual void initiate( const std::shared_ptr< network::Adaptor > adaptor, const std::function< std::error_code ( const std::shared_ptr< network::Adaptor >, const std::error_code ) > completion_handler ) = 0;
                 
-                virtual std::error_code parse( const std::shared_ptr< network::Adaptor > adaptor, const std::list< const std::shared_ptr< Message > > messages ) noexcept = 0;
+                virtual void terminate( const std::shared_ptr< network::Adaptor > adaptor, const std::function< std::error_code ( const std::shared_ptr< network::Adaptor >, const std::error_code ) > completion_handler ) = 0;
                 
-                virtual std::error_code compose( const std::shared_ptr< network::Adaptor > adaptor, const std::shared_ptr< Message > message ) noexcept = 0;
+                virtual void parse( const std::shared_ptr< network::Adaptor > adaptor, const std::function< std::error_code ( const std::shared_ptr< network::Adaptor >, const std::shared_ptr< Message >, const std::error_code ) > completion_handler ) = 0;
                 
-                virtual std::error_code compose( const std::shared_ptr< network::Adaptor > adaptor, const std::list< const std::shared_ptr< Message > > messages ) noexcept = 0;
+                virtual void compose( const std::shared_ptr< network::Adaptor > adaptor, const std::shared_ptr< Message > message, const std::function< std::error_code ( const std::shared_ptr< network::Adaptor >, const std::error_code ) > completion_handler ) = 0;
                 
                 //Getters
-                virtual const std::string get_name( void ) const = 0;
                 
                 //Setters
                 
@@ -76,10 +75,7 @@ namespace corvusoft
                 //Definitions
                 
                 //Constructors
-                Protocol( void )
-                {
-                    return;
-                };
+                Protocol( void ) = default;
                 
                 virtual ~Protocol( void ) = default;
                 
