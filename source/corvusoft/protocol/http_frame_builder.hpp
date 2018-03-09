@@ -2,15 +2,17 @@
  * Copyright 2013-2017, Corvusoft Ltd, All Rights Reserved.
  */
 
-#ifndef _CORVUSOFT_PROTOCOL_MESSAGE_H
-#define _CORVUSOFT_PROTOCOL_MESSAGE_H 1
+#ifndef _CORVUSOFT_PROTOCOL_HTTP_FRAME_BUILDER_H
+#define _CORVUSOFT_PROTOCOL_HTTP_FRAME_BUILDER_H 1
 
 //System Includes
+#include <memory>
 
 //Project Includes
-#include <corvusoft/core/byte.hpp>
+#include <corvusoft/protocol/frame_builder.hpp>
 
 //External Includes
+#include <corvusoft/core/byte.hpp>
 
 //System Namespaces
 
@@ -26,7 +28,12 @@ namespace corvusoft
     {
         //Forward Declarations
         
-        class Message
+        namespace detail
+        {
+            struct HTTPFrameBuilderImpl;
+        }
+        
+        class HTTPFrameBuilder final : public FrameBuilder
         {
             public:
                 //Friends
@@ -34,21 +41,22 @@ namespace corvusoft
                 //Definitions
                 
                 //Constructors
+                HTTPFrameBuilder( void );
+                
+                virtual ~HTTPFrameBuilder( void );
                 
                 //Functionality
-                virtual bool is_finalised( void ) const = 0;
+                bool is_malformed( void ) const override;
                 
-                virtual bool is_malformed( void ) const = 0;
+                bool is_finalised( void ) const override;
                 
-                virtual core::Bytes to_bytes( void ) const = 0;
+                std::shared_ptr< Frame > assemble( const core::Bytes& value ) override;
                 
-                virtual void assemble( const core::Bytes& data ) = 0;
+                core::Bytes disassemble( const std::shared_ptr< Frame > value ) override;
                 
                 //Getters
-                virtual core::Bytes get( const std::string& name ) const = 0;
                 
                 //Setters
-                virtual void set( const std::string& name, const core::Bytes& value ) = 0;
                 
                 //Operators
                 
@@ -60,9 +68,6 @@ namespace corvusoft
                 //Definitions
                 
                 //Constructors
-                Message( void ) = default;
-                
-                virtual ~Message( void ) = default;
                 
                 //Functionality
                 
@@ -80,7 +85,7 @@ namespace corvusoft
                 //Definitions
                 
                 //Constructors
-                Message( const Message& original ) = delete;
+                HTTPFrameBuilder( const HTTPFrameBuilder& original ) = delete;
                 
                 //Functionality
                 
@@ -89,11 +94,12 @@ namespace corvusoft
                 //Setters
                 
                 //Operators
-                Message& operator =( const Message& value ) = delete;
+                HTTPFrameBuilder& operator =( const HTTPFrameBuilder& value ) = delete;
                 
                 //Properties
+                std::unique_ptr< detail::HTTPFrameBuilderImpl > m_pimpl;
         };
     }
 }
 
-#endif  /* _CORVUSOFT_PROTOCOL_MESSAGE_H */
+#endif  /* _CORVUSOFT_PROTOCOL_HTTP_FRAME_BUILDER_H */
