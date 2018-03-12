@@ -46,7 +46,7 @@ namespace corvusoft
         
         shared_ptr< Frame > HTTPFrameBuilder::assemble( const Bytes& value )
         {
-            m_pimpl->data.insert( m_pimpl->data.begin( ), value.begin( ), value.end( ) );
+            m_pimpl->data.insert( m_pimpl->data.end( ), value.begin( ), value.end( ) );
             m_pimpl->assemble( );
             return m_pimpl->frame;
         }

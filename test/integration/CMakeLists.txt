@@ -13,26 +13,18 @@ include_directories( SYSTEM ${catch_INCLUDE} )
 #
 # Build
 #
-#add_executable( http_compose_integration_test_suite ${SOURCE_DIR}/http/compose.cpp )
-#target_link_libraries( http_compose_integration_test_suite ${STATIC_LIBRARY_NAME} )
-#add_test( http_compose_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_compose_integration_test_suite )
+add_executable( http_frame_builder_assemble_integration_test_suite ${SOURCE_DIR}/http_frame_builder/assemble.cpp )
+target_link_libraries( http_frame_builder_assemble_integration_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_builder_assemble_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_builder_assemble_integration_test_suite )
 
-#add_executable( http_parse_integration_test_suite ${SOURCE_DIR}/http/parse.cpp )
-#target_link_libraries( http_parse_integration_test_suite ${STATIC_LIBRARY_NAME} )
-#add_test( http_parse_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_parse_integration_test_suite )
+add_executable( http_frame_builder_disassemble_integration_test_suite ${SOURCE_DIR}/http_frame_builder/disassemble.cpp )
+target_link_libraries( http_frame_builder_disassemble_integration_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_builder_disassemble_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_builder_disassemble_integration_test_suite )
 
-#add_executable( message_clear_integration_test_suite ${SOURCE_DIR}/message/clear.cpp )
-#target_link_libraries( message_clear_integration_test_suite ${STATIC_LIBRARY_NAME} )
-#add_test( message_clear_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_clear_integration_test_suite )
+add_executable( http_frame_builder_is_finalised_integration_test_suite ${SOURCE_DIR}/http_frame_builder/is_finalised.cpp )
+target_link_libraries( http_frame_builder_is_finalised_integration_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_builder_is_finalised_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_builder_is_finalised_integration_test_suite )
 
-#add_executable( message_erase_integration_test_suite ${SOURCE_DIR}/message/erase.cpp )
-#target_link_libraries( message_erase_integration_test_suite ${STATIC_LIBRARY_NAME} )
-#add_test( message_erase_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_erase_integration_test_suite )
-
-#add_executable( message_get_integration_test_suite ${SOURCE_DIR}/message/get.cpp )
-#target_link_libraries( message_get_integration_test_suite ${STATIC_LIBRARY_NAME} )
-#add_test( message_get_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_get_integration_test_suite )
-
-#add_executable( message_has_integration_test_suite ${SOURCE_DIR}/message/has.cpp )
-#target_link_libraries( message_has_integration_test_suite ${STATIC_LIBRARY_NAME} )
-#add_test( message_has_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/message_has_integration_test_suite )
+add_executable( http_frame_builder_is_malformed_integration_test_suite ${SOURCE_DIR}/http_frame_builder/is_malformed.cpp )
+target_link_libraries( http_frame_builder_is_malformed_integration_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_builder_is_malformed_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_builder_is_malformed_integration_test_suite )
