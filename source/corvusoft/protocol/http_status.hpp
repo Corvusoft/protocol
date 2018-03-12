@@ -156,12 +156,12 @@ namespace corvusoft
             return ( status_code >= 100 and status_code <= 199 );
         }
         
-        inline bool is_success( const int status_code )
+        inline bool is_successful( const int status_code )
         {
             return ( status_code >= 200 and status_code <= 299 );
         }
         
-        inline bool is_redirection( const int status_code )
+        inline bool is_redirectional( const int status_code )
         {
             return ( status_code >= 300 and status_code <= 399 );
         }
@@ -179,9 +179,18 @@ namespace corvusoft
         inline int make_status_code( const std::string& status_message )
         {
             for ( const auto& entry : status )
-                if ( entry.second == status_message )
-                    return entry.first;
-                    
+            {
+                auto matching = std::equal( entry.second.begin( ),
+                                            entry.second.end( ),
+                                            status_message.begin( ),
+                                            [ ]( auto lhs, auto rhs )
+                {
+                    return std::tolower( lhs ) == std::tolower( rhs );
+                } );
+                
+                if ( matching ) return entry.first;
+            }
+            
             return 0;
         }
         
