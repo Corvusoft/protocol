@@ -1,9 +1,6 @@
 [submodule "dependency/core"]
 	path = dependency/core
-	url = https://github.com/corvusoft/core
+	url = https://github.com/Corvusoft/core
 [submodule "dependency/runloop"]
 	path = dependency/runloop
 	url = https://github.com/corvusoft/runloop
-[submodule "dependency/network"]
-	path = dependency/network
-	url = https://github.com/corvusoft/network
