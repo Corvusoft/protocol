@@ -7,7 +7,7 @@ Example
 License
 -------
 
-&copy; 2013-2017 Corvusoft Limited, United Kingdom. All rights reserved.
+&copy; 2013-2018 Corvusoft Limited, United Kingdom. All rights reserved.
 
 The Protocol framework is dual licensed; See [LICENSE](LICENSE) for full details.
 

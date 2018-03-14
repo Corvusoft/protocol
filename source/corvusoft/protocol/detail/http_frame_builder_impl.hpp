@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017, Corvusoft Ltd, All Rights Reserved.
+ * Copyright 2013-2018, Corvusoft Ltd, All Rights Reserved.
  */
 
 #ifndef _CORVUSOFT_PROTOCOL_DETAIL_HTTP_FRAME_BUILDER_IMPL_H
