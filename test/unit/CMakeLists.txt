@@ -13,6 +13,30 @@ include_directories( SYSTEM ${catch_INCLUDE} )
 #
 # Build
 #
+add_executable( http_frame_constructor_unit_test_suite ${SOURCE_DIR}/http_frame/constructor.cpp )
+target_link_libraries( http_frame_constructor_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_constructor_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_constructor_unit_test_suite )
+
+add_executable( http_frame_destructor_unit_test_suite ${SOURCE_DIR}/http_frame/destructor.cpp )
+target_link_libraries( http_frame_destructor_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_destructor_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_destructor_unit_test_suite )
+
+add_executable( http_frame_getters_unit_test_suite ${SOURCE_DIR}/http_frame/getters.cpp )
+target_link_libraries( http_frame_getters_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_getters_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_getters_unit_test_suite )
+
+add_executable( http_frame_is_request_unit_test_suite ${SOURCE_DIR}/http_frame/is_request.cpp )
+target_link_libraries( http_frame_is_request_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_is_request_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_is_request_unit_test_suite )
+
+add_executable( http_frame_is_response_unit_test_suite ${SOURCE_DIR}/http_frame/is_response.cpp )
+target_link_libraries( http_frame_is_response_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_is_response_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_is_response_unit_test_suite )
+
+add_executable( http_frame_setters_unit_test_suite ${SOURCE_DIR}/http_frame/setters.cpp )
+target_link_libraries( http_frame_setters_unit_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_setters_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_setters_unit_test_suite )
+
 add_executable( http_frame_builder_constructor_unit_test_suite ${SOURCE_DIR}/http_frame_builder/constructor.cpp )
 target_link_libraries( http_frame_builder_constructor_unit_test_suite ${STATIC_LIBRARY_NAME} )
 add_test( http_frame_builder_constructor_unit_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_builder_constructor_unit_test_suite )

@@ -30,6 +30,8 @@ namespace corvusoft
         
         struct Frame
         {
+            virtual ~Frame( void ) = default;
+            
             std::multimap< std::string, core::Bytes > meta;
             
             std::multimap< std::string, core::Bytes > data;

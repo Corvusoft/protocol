@@ -14,7 +14,7 @@
 #include <algorithm>
 
 //Project Includes
-#include "corvusoft/protocol/frame.hpp"
+#include "corvusoft/protocol/http_frame.hpp"
 
 //External Includes
 #include <corvusoft/core/byte.hpp>
@@ -48,7 +48,7 @@ namespace corvusoft
             {
                 core::Bytes data { };
                 
-                std::shared_ptr< Frame > frame = nullptr;
+                std::shared_ptr< HTTPFrame > frame = nullptr;
                 
                 bool is_malformed = false;
                 
@@ -65,7 +65,7 @@ namespace corvusoft
                     auto values = tokenise( );
                     if ( values.empty( ) ) return;
                     
-                    frame = std::make_shared< Frame >( );
+                    frame = std::make_shared< HTTPFrame >( );
                     if ( is_request( values.at( 0 ) ) ) return parse_request( values );
                     if ( is_response( values.at( 0 ) ) ) return parse_response( values );
                     
@@ -74,19 +74,19 @@ namespace corvusoft
                 
                 void finalise( void )
                 {
-                    auto iterator = std::search( data.begin( ), data.end( ), BODY_DELIMITER_BEGIN, BODY_DELIMITER_END );
-                    is_finalised = iterator not_eq data.end( );
+                    auto iterator = std::search( std::begin( data ), std::end( data ), BODY_DELIMITER_BEGIN, BODY_DELIMITER_END );
+                    is_finalised = iterator not_eq std::end( data );
                 }
                 
                 std::vector< const std::string > tokenise( void )
                 {
                     static const auto delimiter_length = FIELD_DELIMITER.size( );
                     
-                    auto iterator_begin = data.begin( );
-                    auto iterator_end = std::search( data.begin( ), data.end( ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
+                    auto iterator_begin = std::begin( data );
+                    auto iterator_end = std::search( std::begin( data ), std::end( data ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
                     std::vector< const std::string > values;
                     
-                    while ( iterator_end not_eq data.end( ) )
+                    while ( iterator_end not_eq std::end( data ) )
                     {
                         auto value = core::Bytes( iterator_begin, iterator_end );
                         if ( value.empty( ) or value == FIELD_DELIMITER ) break;
@@ -94,7 +94,7 @@ namespace corvusoft
                         values.emplace_back( core::make_string( value ) );
                         
                         iterator_begin = iterator_end + delimiter_length;
-                        iterator_end = std::search( iterator_begin, data.end( ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
+                        iterator_end = std::search( iterator_begin, std::end( data ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
                     }
                     
                     is_malformed = values.empty( );
@@ -116,28 +116,28 @@ namespace corvusoft
                 void parse_request( const std::vector< const std::string >& values )
                 {
                     const auto value = values.at( 0 );
-                    auto start = value.begin( );
-                    auto stop = std::find( start, value.end( ), ' ' );
-                    is_malformed = stop == value.end( );
+                    size_t start = 0;
+                    size_t stop = value.find( ' ' );
+                    is_malformed = stop == std::string::npos;
                     if ( is_malformed ) return;
-                    frame->meta.emplace( "method", core::Bytes( start, stop ) );
+                    frame->set_method( value.substr( start, stop ) );
                     
-                    start = ++stop;
-                    stop = std::find( start, value.end( ), ' ' );
-                    is_malformed = stop == value.end( );
+                    start = stop + 1;
+                    stop = value.find( ' ', start );
+                    is_malformed = stop == std::string::npos;
                     if ( is_malformed ) return;
-                    frame->meta.emplace( "path", core::Bytes( start, stop ) );
+                    frame->set_path( value.substr( start, stop - start ) );
                     
-                    start = ++stop;
-                    stop = std::find( start, value.end( ), '/' );
-                    is_malformed = stop == value.end( );
+                    start = stop + 1;
+                    stop = value.find( '/', start );
+                    is_malformed = stop == std::string::npos;
                     if ( is_malformed ) return;
-                    frame->meta.emplace( "protocol", core::Bytes( start, stop ) );
+                    frame->set_protocol( value.substr( start, stop - start ) );
                     
-                    start = ++stop;
-                    is_malformed = ( start == value.end( ) or stop == value.end( ) );
+                    start = stop + 1;
+                    is_malformed = ( start == std::string::npos or stop == std::string::npos );
                     if ( is_malformed ) return;
-                    frame->meta.emplace( "version", core::Bytes( start, value.end( ) ) );
+                    frame->set_version( value.substr( start, value.length( ) ) );
                     
                     parse_headers( values );
                     parse_body( );
@@ -146,26 +146,26 @@ namespace corvusoft
                 void parse_response( const std::vector< const std::string >& values )
                 {
                     const auto value = values.at( 0 );
-                    auto start = value.begin( );
-                    auto stop = std::find( start, value.end( ), '/' );
-                    is_malformed = stop == value.end( );
+                    size_t start = 0;
+                    size_t stop = value.find( '/' );
+                    is_malformed = stop == std::string::npos;
                     if ( is_malformed ) return;
-                    frame->meta.emplace( "protocol", core::Bytes( start, stop ) );
+                    frame->set_protocol( value.substr( start, stop ) );
                     
-                    start = ++stop;
-                    stop = std::find( start, value.end( ), ' ' );
-                    is_malformed = stop == value.end( );
+                    start = stop + 1;
+                    stop = value.find( ' ', start );
+                    is_malformed = stop == std::string::npos;
                     if ( is_malformed ) return;
-                    frame->meta.emplace( "version", core::Bytes( start, stop ) );
+                    frame->set_version( value.substr( start, stop - start ) );
                     
-                    start = ++stop;
-                    is_malformed = start == value.end( );
+                    start = stop + 1;
+                    is_malformed = start == std::string::npos;
                     if ( is_malformed ) return;
-                    stop = std::find( start, value.end( ), ' ' );
-                    frame->meta.emplace( "status", core::Bytes( start, stop ) );
+                    stop = value.find( ' ', start );
+                    frame->set_status_code( value.substr( start, stop - start ) );
                     
-                    if ( stop not_eq value.end( ) )
-                        frame->meta.emplace( "message", core::Bytes( ++stop, value.end( ) ) );
+                    if ( stop not_eq std::string::npos )
+                        frame->set_status_message( value.substr( ++stop, value.length( ) ) );
                         
                     parse_headers( values );
                     parse_body( );
@@ -177,25 +177,28 @@ namespace corvusoft
                     const auto length = values.size( );
                     for ( std::string::size_type index = 1; index not_eq length; index++ )
                     {
-                        const auto value = values.at( index );
-                        stop = value.find_first_of( ':' );
+                        auto value = values.at( index );
+                        stop = value.find( ':' );
                         
                         is_malformed = stop == std::string::npos;
                         if ( is_malformed ) return;
                         
-                        const auto header_name = value.substr( 0, stop );
-                        auto header_value = value.substr( stop + 1 );
-                        if ( not header_value.empty( ) and header_value.at( 0 ) == ' ' ) header_value.erase( 0, 1 );
+                        auto name = value.substr( 0, stop );
+                        is_malformed = name.empty( );
+                        if ( is_malformed ) return;
                         
-                        frame->meta.emplace( header_name, core::make_bytes( header_value ) );
+                        value = value.substr( stop + 1 );
+                        if ( value.at( 0 ) == ' ' ) value.erase( 0, 1 );
+                        
+                        frame->set_header( name, value );
                     }
                 }
                 
                 void parse_body( void )
                 {
                     static const auto delimiter_length = BODY_DELIMITER.size( );
-                    auto iterator = std::search( data.begin( ), data.end( ), BODY_DELIMITER_BEGIN, BODY_DELIMITER_END );
-                    frame->data.emplace( "body", core::Bytes( iterator + delimiter_length, data.end( ) ) );
+                    auto iterator = std::search( std::begin( data ), std::end( data ), BODY_DELIMITER_BEGIN, BODY_DELIMITER_END );
+                    frame->set_body( core::Bytes( iterator + delimiter_length, std::end( data ) ) );
                 }
                 
                 void disassemble( void )
@@ -206,31 +209,27 @@ namespace corvusoft
                     
                     data.clear( );
                     
-                    if ( frame->meta.count( "method" ) ) return compose_request( );
-                    if ( frame->meta.count( "status" ) ) return compose_response( );
+                    if ( frame->is_request( ) ) return compose_request( );
+                    if ( frame->is_response( ) ) return compose_response( );
                 }
                 
                 void compose_request( void )
                 {
-                    auto iterator = frame->meta.find( "method" );
-                    if ( iterator == frame->meta.end( ) ) return;
-                    data.insert( data.end( ), iterator->second.begin( ), iterator->second.end( ) );
+                    auto value = frame->get_method( );
+                    data.insert( std::end( data ), std::begin( value ), std::end( value ) );
                     data.emplace_back( ' ' );
                     
-                    iterator = frame->meta.find( "path" );
-                    if ( iterator == frame->meta.end( ) ) return;
-                    data.insert( data.end( ), iterator->second.begin( ), iterator->second.end( ) );
+                    value = frame->get_path( );
+                    data.insert( std::end( data ), std::begin( value ), std::end( value ) );
                     data.emplace_back( ' ' );
                     
-                    iterator = frame->meta.find( "protocol" );
-                    if ( iterator == frame->meta.end( ) ) return;
-                    data.insert( data.end( ), iterator->second.begin( ), iterator->second.end( ) );
+                    value = frame->get_protocol( );
+                    data.insert( std::end( data ), std::begin( value ), std::end( value ) );
                     data.emplace_back( '/' );
                     
-                    iterator = frame->meta.find( "version" );
-                    if ( iterator == frame->meta.end( ) ) return;
-                    data.insert( data.end( ), iterator->second.begin( ), iterator->second.end( ) );
-                    data.insert( data.end( ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
+                    value = frame->get_version( );
+                    data.insert( std::end( data ), std::begin( value ), std::end( value ) );
+                    data.insert( std::end( data ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
                     
                     compose_headers( );
                     compose_body( );
@@ -241,27 +240,24 @@ namespace corvusoft
                 
                 void compose_response( void )
                 {
-                    auto iterator = frame->meta.find( "protocol" );
-                    if ( iterator == frame->meta.end( ) ) return;
-                    data.insert( data.end( ), iterator->second.begin( ), iterator->second.end( ) );
+                    auto value = frame->get_protocol( );
+                    data.insert( std::end( data ), std::begin( value ), std::end( value ) );
                     data.emplace_back( '/' );
                     
-                    iterator = frame->meta.find( "version" );
-                    if ( iterator == frame->meta.end( ) ) return;
-                    data.insert( data.end( ), iterator->second.begin( ), iterator->second.end( ) );
+                    value = frame->get_version( );
+                    data.insert( std::end( data ), std::begin( value ), std::end( value ) );
                     data.emplace_back( ' ' );
                     
-                    iterator = frame->meta.find( "status" );
-                    if ( iterator == frame->meta.end( ) ) return;
-                    data.insert( data.end( ), iterator->second.begin( ), iterator->second.end( ) );
+                    value = frame->get_status_code( );
+                    data.insert( std::end( data ), std::begin( value ), std::end( value ) );
                     
-                    iterator = frame->meta.find( "message" );
-                    if ( iterator not_eq frame->meta.end( ) )
+                    value = frame->get_status_message( );
+                    if ( not value.empty( ) )
                     {
                         data.emplace_back( ' ' );
-                        data.insert( data.end( ), iterator->second.begin( ), iterator->second.end( ) );
+                        data.insert( std::end( data ), std::begin( value ), std::end( value ) );
                     }
-                    data.insert( data.end( ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
+                    data.insert( std::end( data ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
                     
                     compose_headers( );
                     compose_body( );
@@ -272,30 +268,21 @@ namespace corvusoft
                 
                 void compose_headers( void )
                 {
-                    for ( const auto meta : frame->meta )
+                    for ( const auto header : frame->get_headers( ) )
                     {
-                        if ( is_header( meta.first ) )
-                        {
-                            auto header = core::make_bytes( meta.first + ": " );
-                            header.insert( header.end( ), meta.second.begin( ), meta.second.end( ) );
-                            data.insert( data.end( ), header.begin( ), header.end( ) );
-                            data.insert( data.end( ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
-                        }
+                        auto value = core::make_bytes( header.first + ": " );
+                        value.insert( std::end( value ), std::begin( header.second ), std::end( header.second ) );
+                        
+                        data.insert( std::end( data ), std::begin( value ), std::end( value ) );
+                        data.insert( std::end( data ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
                     }
                 }
                 
                 void compose_body( void )
                 {
-                    data.insert( data.end( ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
-                    
-                    auto iterator = frame->data.find( "body" );
-                    if ( iterator == frame->data.end( ) ) return;
-                    data.insert( data.end( ), iterator->second.begin( ), iterator->second.end( ) );
-                }
-                
-                bool is_header( const std::string& name )
-                {
-                    return not ( name == "method" or name == "path" or name == "protocol" or name == "version" or name == "status" or name == "message" );
+                    data.insert( std::end( data ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
+                    auto value = frame->get_body( );
+                    data.insert( std::end( data ), std::begin( value ), std::end( value ) );
                 }
             };
         }

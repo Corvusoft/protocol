@@ -13,6 +13,18 @@ include_directories( SYSTEM ${catch_INCLUDE} )
 #
 # Build
 #
+add_executable( http_frame_accessors_integration_test_suite ${SOURCE_DIR}/http_frame/accessors.cpp )
+target_link_libraries( http_frame_accessors_integration_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_accessors_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_accessors_integration_test_suite )
+
+add_executable( http_frame_is_request_integration_test_suite ${SOURCE_DIR}/http_frame/is_request.cpp )
+target_link_libraries( http_frame_is_request_integration_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_is_request_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_is_request_integration_test_suite )
+
+add_executable( http_frame_is_response_integration_test_suite ${SOURCE_DIR}/http_frame/is_response.cpp )
+target_link_libraries( http_frame_is_response_integration_test_suite ${STATIC_LIBRARY_NAME} )
+add_test( http_frame_is_response_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_is_response_integration_test_suite )
+
 add_executable( http_frame_builder_assemble_integration_test_suite ${SOURCE_DIR}/http_frame_builder/assemble.cpp )
 target_link_libraries( http_frame_builder_assemble_integration_test_suite ${STATIC_LIBRARY_NAME} )
 add_test( http_frame_builder_assemble_integration_test_suite ${EXECUTABLE_OUTPUT_PATH}/http_frame_builder_assemble_integration_test_suite )

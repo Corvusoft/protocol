@@ -3,6 +3,7 @@
  */
 
 //System Includes
+#include <iterator>
 
 //Project Includes
 #include "corvusoft/protocol/http_frame_builder.hpp"
@@ -11,7 +12,10 @@
 //External Includes
 
 //System Namespaces
+using std::end;
+using std::begin;
 using std::shared_ptr;
+using std::dynamic_pointer_cast;
 
 //Project Namespaces
 using corvusoft::protocol::detail::HTTPFrameBuilderImpl;
@@ -46,14 +50,14 @@ namespace corvusoft
         
         shared_ptr< Frame > HTTPFrameBuilder::assemble( const Bytes& value )
         {
-            m_pimpl->data.insert( m_pimpl->data.end( ), value.begin( ), value.end( ) );
+            m_pimpl->data.insert( end( m_pimpl->data ), begin( value ), end( value ) );
             m_pimpl->assemble( );
             return m_pimpl->frame;
         }
         
         Bytes HTTPFrameBuilder::disassemble( const shared_ptr< Frame > value )
         {
-            m_pimpl->frame = value;
+            m_pimpl->frame = std::dynamic_pointer_cast< HTTPFrame >( value );
             m_pimpl->disassemble( );
             return m_pimpl->data;
         }
