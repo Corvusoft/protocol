@@ -137,7 +137,7 @@ namespace corvusoft
                     start = stop + 1;
                     is_malformed = ( start == std::string::npos or stop == std::string::npos );
                     if ( is_malformed ) return;
-                    frame->set_version( value.substr( start, value.length( ) ) );
+                    frame->set_version( value.substr( start, std::string::npos ) );
                     
                     parse_headers( values );
                     parse_body( );
@@ -159,13 +159,13 @@ namespace corvusoft
                     frame->set_version( value.substr( start, stop - start ) );
                     
                     start = stop + 1;
+                    stop = value.find( ' ', start );
                     is_malformed = start == std::string::npos;
                     if ( is_malformed ) return;
-                    stop = value.find( ' ', start );
                     frame->set_status_code( value.substr( start, stop - start ) );
                     
                     if ( stop not_eq std::string::npos )
-                        frame->set_status_message( value.substr( ++stop, value.length( ) ) );
+                        frame->set_status_message( value.substr( ++stop, std::string::npos ) );
                         
                     parse_headers( values );
                     parse_body( );
