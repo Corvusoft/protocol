@@ -104,6 +104,14 @@ TEST_CASE( "Assert assembled request with valid status, headers and body." )
     REQUIRE( iterator->second == make_bytes( "resource payload." ) );
 }
 
+TEST_CASE( "Assert assembled request with no '\\r\\n\\r\\n' line." )
+{
+    auto data = make_bytes( "POST /resource/1 HTTP/1.0\r\n" );
+    auto builder = make_shared< HTTPFrameBuilder >( );
+    auto frame = builder->assemble( data );
+    REQUIRE( frame == nullptr );
+}
+
 TEST_CASE( "Assert assembled response with valid status." )
 {
     auto data = make_bytes( "HTTP/1.1 200 OK\r\n\r\n" );
@@ -207,4 +215,12 @@ TEST_CASE( "Assert assembled response with valid status, headers and body." )
     iterator = frame->data.find( "body" );
     REQUIRE( iterator not_eq frame->meta.end( ) );
     REQUIRE( iterator->second == make_bytes( "resource payload." ) );
+}
+
+TEST_CASE( "Assert assembled response with no '\\r\\n\\r\\n' line." )
+{
+    auto data = make_bytes( "HTTP/1.1 200 OK\r\n" );
+    auto builder = make_shared< HTTPFrameBuilder >( );
+    auto frame = builder->assemble( data );
+    REQUIRE( frame == nullptr );
 }
