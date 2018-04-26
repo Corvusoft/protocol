@@ -2,8 +2,7 @@
  * Copyright 2013-2018, Corvusoft Ltd, All Rights Reserved.
  */
 
-#ifndef _CORVUSOFT_PROTOCOL_DETAIL_HTTP_FRAME_BUILDER_IMPL_H
-#define _CORVUSOFT_PROTOCOL_DETAIL_HTTP_FRAME_BUILDER_IMPL_H 1
+#pragma once
 
 //System Includes
 #include <regex>
@@ -288,5 +287,3 @@ namespace corvusoft
         }
     }
 }
-
-#endif  /* _CORVUSOFT_PROTOCOL_DETAIL_HTTP_FRAME_BUILDER_IMPL_H */

@@ -2,8 +2,7 @@
  * Copyright 2013-2018, Corvusoft Ltd, All Rights Reserved.
  */
 
-#ifndef _CORVUSOFT_PROTOCOL_HTTP_STATUS_H
-#define _CORVUSOFT_PROTOCOL_HTTP_STATUS_H 1
+#pragma once
 
 //System Includes
 #include <map>
@@ -200,5 +199,3 @@ namespace corvusoft
         }
     }
 }
-
-#endif  /* _CORVUSOFT_PROTOCOL_HTTP_STATUS_H */
