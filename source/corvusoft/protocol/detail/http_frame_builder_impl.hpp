@@ -77,13 +77,13 @@ namespace corvusoft
                     is_finalised = iterator not_eq std::end( data );
                 }
                 
-                std::vector< const std::string > tokenise( void )
+                std::vector< std::string > tokenise( void )
                 {
                     static const auto delimiter_length = FIELD_DELIMITER.size( );
                     
                     auto iterator_begin = std::begin( data );
                     auto iterator_end = std::search( std::begin( data ), std::end( data ), FIELD_DELIMITER_BEGIN, FIELD_DELIMITER_END );
-                    std::vector< const std::string > values;
+                    std::vector< std::string > values;
                     
                     while ( iterator_end not_eq std::end( data ) )
                     {
@@ -112,7 +112,7 @@ namespace corvusoft
                     return std::regex_match( value, pattern );
                 }
                 
-                void parse_request( const std::vector< const std::string >& values )
+                void parse_request( const std::vector< std::string >& values )
                 {
                     const auto value = values.at( 0 );
                     size_t start = 0;
@@ -142,7 +142,7 @@ namespace corvusoft
                     parse_body( );
                 }
                 
-                void parse_response( const std::vector< const std::string >& values )
+                void parse_response( const std::vector< std::string >& values )
                 {
                     const auto value = values.at( 0 );
                     size_t start = 0;
@@ -170,7 +170,7 @@ namespace corvusoft
                     parse_body( );
                 }
                 
-                void parse_headers( const std::vector< const std::string >& values )
+                void parse_headers( const std::vector< std::string >& values )
                 {
                     std::string::size_type stop = 0;
                     const auto length = values.size( );
